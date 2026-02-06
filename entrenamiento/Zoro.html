@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Santoryu - King of Hell</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES ZORO (PIRATE HUNTER) --- */
+        :root {
+            /* Colores: Verde Marimo, Negro Haki y Acero */
+            --zoro-green: #00E676;       /* Verde intenso (su aura) */
+            --zoro-dark-green: #1B5E20;  /* Verde oscuro militar */
+            --zoro-black: #121212;       /* Negro del pañuelo/Haki */
+            --zoro-steel: #B0BEC5;       /* Acero de Wado Ichimonji */
+            --white: #ffffff;
+            
+            --glass-bg: rgba(0, 230, 118, 0.1); 
+            --glass-border: rgba(0, 230, 118, 0.4);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Oscuridad con destellos verdes */
+            background: linear-gradient(135deg, #000000 0%, var(--zoro-dark-green) 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Cortes de aire / Aura) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(45deg, rgba(0, 230, 118, 0.05) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(0, 230, 118, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            opacity: 0.6;
+            animation: moveBackground 60s linear infinite;
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--zoro-green); width: 0%;
+            box-shadow: 0 0 20px var(--zoro-green); /* Aura verde */
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 55vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* IMAGEN DINÁMICA DE ZORO */
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 1)), url('imagenes/ZORO.png');
+            background-size: cover;
+            background-position: center 25%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--zoro-green);
+            transition: border-color 0.5s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 3px;
+            color: var(--white);
+            text-shadow: 3px 3px 0px var(--zoro-dark-green), 0 0 25px var(--zoro-green);
+            animation: fadeInDown 1s ease-out;
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            color: var(--zoro-black);
+            background: var(--zoro-green);
+            padding: 10px 30px;
+            margin-top: 15px;
+            border: 1px solid var(--white);
+            text-transform: uppercase;
+            font-weight: 800;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+        }
+
+        /* --- SELECTOR DE MODO --- */
+        .mode-selector {
+            margin-top: 25px;
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 1s ease-out 0.7s backwards;
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--zoro-green);
+            color: var(--zoro-green);
+            padding: 10px 25px;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn:hover {
+            background: var(--zoro-green);
+            color: var(--zoro-black);
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.5);
+        }
+
+        .mode-btn.active {
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.8);
+        }
+        
+        /* Estilos activos por modo */
+        .mode-btn.active[data-mode="calistenia"] {
+            background: var(--zoro-green);
+            color: var(--zoro-black);
+        }
+        .mode-btn.active[data-mode="gym"] {
+            background: var(--zoro-black);
+            color: var(--zoro-green);
+            border-color: var(--white);
+            box-shadow: 0 0 20px var(--white);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(27, 94, 32, 0.3); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--zoro-green);
+            padding: 40px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            margin-bottom: 50px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: #E0F2F1;
+        }
+        .quote-text strong { 
+            color: var(--zoro-green); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            border-radius: 4px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 230, 118, 0.2);
+            border-color: var(--zoro-green);
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.5);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: var(--zoro-green);
+            border-color: var(--white);
+            color: var(--zoro-black);
+            transform: scale(0.95);
+            box-shadow: 0 0 15px var(--zoro-green);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #00251a, #000000);
+            border: 2px solid var(--zoro-green);
+            box-shadow: 0 0 50px rgba(0, 230, 118, 0.2);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 4px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.2s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--zoro-green); color: var(--zoro-black); padding: 5px 15px; border-radius: 0px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--white); text-transform: uppercase; text-shadow: 0 0 5px var(--zoro-green); }
+        .modal-desc { line-height: 1.8; color: #b9f6ca; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 2px solid var(--zoro-green); color: var(--zoro-green);
+            font-family: var(--font-title); font-size: 1.3rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--zoro-green); 
+            color: var(--zoro-black); 
+            box-shadow: 0 0 30px var(--zoro-green);
+        }
+
+        /* --- ESTADÍSTICAS Y RESET --- */
+        .stats-container {
+            text-align: center; margin-bottom: 30px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--zoro-green); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+            margin-bottom: 15px;
+        }
+        
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--zoro-black);
+            background: var(--zoro-green);
+            border-color: var(--zoro-green);
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+            .mode-selector { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header id="mainHeader">
+        <h1>Rey del Infierno</h1>
+        <div class="subtitle">Entrenamiento Santoryu</div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btnCalisthenics" data-mode="calistenia" onclick="setMode('calistenia')">Santoryu (Calistenia)</button>
+            <button class="mode-btn" id="btnGym" data-mode="gym" onclick="setMode('gym')">Rey del Infierno (Gym)</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Las heridas en la espalda son la vergüenza de un espadachín. <br>
+                <strong>¡Yo nunca pierdo!</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                MODO: <span id="currentModeText" style="color:var(--white)">SANTORYU</span> | AMBICIÓN: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Progreso Actual</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+            </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--zoro-green); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">Entrenamiento Completado</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN Y ESTADO DE MODOS ---
+        let currentDayIndex = 0;
+        let currentMode = 'calistenia'; 
+
+        // Base de datos en memoria (se sincroniza con LocalStorage)
+        let progressData = {
+            'calistenia': new Set(),
+            'gym': new Set()
+        };
+
+        // --- 2. LÓGICA DE CAMBIO DE MODO ---
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Actualizar botones visualmente
+            document.getElementById('btnCalisthenics').classList.remove('active');
+            document.getElementById('btnGym').classList.remove('active');
+            
+            const header = document.getElementById('mainHeader');
+            const sub = document.querySelector('.subtitle');
+
+            if(mode === 'calistenia') {
+                document.getElementById('btnCalisthenics').classList.add('active');
+                document.getElementById('currentModeText').innerText = "SANTORYU";
+                // Estilo Calistenia (Verde Marimo)
+                header.style.borderBottomColor = "var(--zoro-green)";
+                sub.innerText = "ENTRENAMIENTO SANTORYU";
+                sub.style.background = "var(--zoro-green)";
+                sub.style.color = "var(--zoro-black)";
+                document.getElementById('progressBar').style.background = "var(--zoro-green)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 20px var(--zoro-green)";
+            } else {
+                document.getElementById('btnGym').classList.add('active');
+                document.getElementById('currentModeText').innerText = "REY DEL INFIERNO";
+                // Estilo Gym (Oscuro/Haki)
+                header.style.borderBottomColor = "var(--white)";
+                sub.innerText = "PODER DE GORILA";
+                sub.style.background = "var(--zoro-black)";
+                sub.style.color = "var(--zoro-green)";
+                document.getElementById('progressBar').style.background = "var(--white)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 20px var(--white)";
+            }
+
+            refreshGrid();
+            updateProgress();
+        }
+
+        // --- 3. FUNCIONES DE ACTUALIZACIÓN VISUAL ---
+        function refreshGrid() {
+            // 1. Limpiar visualmente todos los días
+            const allDays = document.querySelectorAll('.day-card');
+            allDays.forEach(card => {
+                card.classList.remove('completed');
+                card.style.background = ""; 
+                card.style.borderColor = ""; 
+                
+                // Restaurar el número normal
+                const dayNum = card.id.split('-')[1];
+                card.innerHTML = `<span class="day-number">${dayNum}</span>`;
+            });
+
+            // 2. Marcar solo los días completados EN EL MODO ACTUAL
+            const currentSet = progressData[currentMode];
+            currentSet.forEach(dayIndex => {
+                const card = document.getElementById(`day-${dayIndex}`);
+                if (card) {
+                    card.classList.add('completed');
+                    
+                    if (currentMode === 'gym') {
+                        // Estilo Gym (Negro/Blanco Haki)
+                        card.style.background = "var(--zoro-black)";
+                        card.style.borderColor = "var(--white)";
+                        card.style.color = "var(--zoro-green)";
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🦍</span>`; // Gorila
+                    } else {
+                        // Estilo Calistenia (Verde Espadas)
+                        card.style.background = "var(--zoro-green)";
+                        card.style.borderColor = "var(--white)";
+                        card.style.color = "var(--zoro-black)";
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">⚔️</span>`; // Espadas
+                    }
+                }
+            });
+        }
+
+        // --- 4. LÓGICA DE EJERCICIOS (SEPARADA) ---
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 30 + (cycle * 5); 
+            
+            let title = "", description = "";
+
+            if (currentMode === 'calistenia') {
+                // --- MODO SANTORYU (CALISTENIA / AGILIDAD / CORE) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "108 LIBRAS FÉNIX (CORE)";
+                        description = `<strong>Enfoque:</strong> Abdomen y Estabilidad.<br><br>• L-Sit en barra: 4 series al fallo<br>• Elevaciones de piernas colgado (Toes to bar): 4 x 15<br>• Plancha lateral (Un brazo): 90 seg por lado<br>• Hollow Body Hold: 3 min acumulados`;
+                        break;
+                    case 2: 
+                        title = "ONIGIRI (EXPLOSIVIDAD)";
+                        description = `<strong>Enfoque:</strong> Tren inferior y velocidad.<br><br>• Sentadillas con salto: 4 x 25<br>• Zancadas explosivas: 4 x 20<br>• Sprints (Corte rápido): 10 x 50m<br>• Saltos al cajón: 50 reps`;
+                        break;
+                    case 3: 
+                        title = "IAI (DESENVAINADO)";
+                        description = `<strong>Enfoque:</strong> Movilidad y Antebrazos.<br><br>• Dominadas con toalla (o cuerda): 4 series al fallo<br>• Flexiones de dedos (o puños): 4 x 15<br>• Sombra con espada (Palo/Bokken): 1000 cortes verticales<br>• Pino estático (Handstand): 5 intentos`;
+                        break;
+                    case 4: 
+                        title = "SANTORYU OGI";
+                        description = `<strong>Enfoque:</strong> Resistencia Total.<br><br>• Burpees (Pecho al suelo): ${reps} reps<br>• Dominadas estrictas: 50 reps (Total)<br>• Flexiones diamante: 4 x 20<br>• Correr cargando algo pesado (Mochila): 3 km`;
+                        break;
+                    case 0: 
+                        title = "MEDITACIÓN Y SIESTA";
+                        description = `<strong>Enfoque:</strong> Enfoque mental.<br><br>• Meditación Zazen: 30 min<br>• Estiramientos de muñeca y hombro<br>• Siesta profunda (Recuperación)<br>• Limpieza de equipo`;
+                        break;
+                }
+            } else {
+                // --- MODO REY DEL INFIERNO (GYM / FUERZA BRUTA) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "FUERZA DE GORILA (PUSH)";
+                        description = `<strong>Enfoque:</strong> Hombros y Tríceps monstruosos.<br><br>• Press Militar de Pie: 5 x 5 (Pesado)<br>• Press Banca con Mancuernas: 4 x 8<br>• Fondos Lastrados: 4 x 10<br>• Extensiones Tríceps (Cuerda): 4 x 15<br><em>*¡Levanta hasta que los dientes rechinen!</em>`;
+                        break;
+                    case 2: 
+                        title = "ESPALDA DE DEMONIO (PULL)";
+                        description = `<strong>Enfoque:</strong> Dorsales para cargar el mundo.<br><br>• Peso Muerto: 3 x 5 (Muy pesado)<br>• Remo con Barra (Pendlay): 5 x 5<br>• Dominadas Lastradas: 4 x 6<br>• Curl de Bíceps (Mancuerna pesada): 4 x 10`;
+                        break;
+                    case 3: 
+                        title = "PIERNAS DE ACERO (LEGS)";
+                        description = `<strong>Enfoque:</strong> Estabilidad inamovible.<br><br>• Sentadilla Profunda: 5 x 5<br>• Prensa de Piernas: 4 x 12<br>• Zancadas con Barra: 3 x 20 pasos<br>• Elevación de Gemelos: 5 x 20`;
+                        break;
+                    case 4: 
+                        title = "ENTRENAMIENTO DE MANDÍBULA";
+                        description = `<strong>Enfoque:</strong> Cuello y Antebrazos.<br><br>• Paseo del Granjero (Farmer's Walk): 4 vueltas al fallo<br>• Curl de Antebrazo con Barra: 5 x 20<br>• Curl de Cuello (Con disco): 4 x 15<br>• Encogimientos de Trapecio: 5 x 15`;
+                        break;
+                    case 0: 
+                        title = "SAKE Y RECUPERACIÓN";
+                        description = `<strong>Enfoque:</strong> Sanar heridas.<br><br>• Comida abundante (Carne y Sake)<br>• Masaje o Foam Rolling<br>• Dormir 10 horas<br>• No perderse yendo al gimnasio`;
+                        break;
+                }
+            }
+            return { title, description };
+        }
+
+        // --- 5. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 6. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            
+            // Personalizar botón
+            const btn = modal.querySelector('.btn-action');
+            if(currentMode === 'gym') {
+                btn.style.borderColor = "var(--white)";
+                btn.style.color = "var(--white)";
+                btn.innerText = "DOMINAR";
+                btn.onmouseenter = () => { btn.style.background = "var(--white)"; btn.style.color = "var(--zoro-black)"; };
+                btn.onmouseleave = () => { btn.style.background = "transparent"; btn.style.color = "var(--white)"; };
+            } else {
+                btn.style.borderColor = "var(--zoro-green)";
+                btn.style.color = "var(--zoro-green)";
+                btn.innerText = "ENTRENAMIENTO COMPLETADO";
+                btn.onmouseenter = () => { btn.style.background = "var(--zoro-green)"; btn.style.color = "var(--zoro-black)"; };
+                btn.onmouseleave = () => { btn.style.background = "transparent"; btn.style.color = "var(--zoro-green)"; };
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 7. SISTEMA DE COMPLETADO Y PERSISTENCIA (LOCALSTORAGE) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            
+            if(progressData[currentMode].has(currentDayIndex)) return;
+
+            progressData[currentMode].add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            if (currentMode === 'gym') {
+                // Estilo Gym
+                card.style.background = "var(--zoro-black)";
+                card.style.borderColor = "var(--white)";
+                card.style.color = "var(--zoro-green)";
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🦍</span>`;
+            } else {
+                // Estilo Calistenia
+                card.style.background = "var(--zoro-green)";
+                card.style.borderColor = "var(--white)";
+                card.style.color = "var(--zoro-black)";
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">⚔️</span>`;
+            }
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = progressData[currentMode].size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+        function saveData() {
+            localStorage.setItem('zoro_calistenia', JSON.stringify([...progressData.calistenia]));
+            localStorage.setItem('zoro_gym', JSON.stringify([...progressData.gym]));
+        }
+
+        function loadData() {
+            // Cargar Calistenia
+            const savedCalistenia = localStorage.getItem('zoro_calistenia');
+            if (savedCalistenia) {
+                progressData.calistenia = new Set(JSON.parse(savedCalistenia));
+            }
+
+            // Cargar Gym
+            const savedGym = localStorage.getItem('zoro_gym');
+            if (savedGym) {
+                progressData.gym = new Set(JSON.parse(savedGym));
+            }
+
+            // Refrescar UI inicial
+            refreshGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            const modeName = currentMode === 'calistenia' ? "SANTORYU (Calistenia)" : "REY DEL INFIERNO (Gym)";
+            if(confirm(`¿Estás seguro de BORRAR todo el progreso de ${modeName}?`)) {
+                // Borrar solo del set actual
+                progressData[currentMode].clear();
+                
+                // Guardar el estado vacío
+                saveData();
+                
+                // Actualizar visualmente
+                refreshGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 35; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '2px';
+                particle.style.height = '15px';
+                
+                let colors;
+                if(currentMode === 'gym') {
+                    // Blanco, Negro, Gris (Haki)
+                    colors = ['#FFFFFF', '#121212', '#B0BEC5'];
+                } else {
+                    // Verde, Negro, Blanco
+                    colors = ['#00E676', '#121212', '#FFFFFF'];
+                }
+
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '0';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 120 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const rotation = Math.random() * 360;
+
+                particle.animate([
+                    { transform: `translate(0,0) rotate(${rotation}deg) scale(1)`, opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(${rotation + 180}deg) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 700,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+        
+        // Inicializar al cargar
+        loadData();
+
+    </script>
+</body>
+</html>

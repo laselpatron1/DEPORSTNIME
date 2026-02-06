@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Yeager - Dual Training</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES EREN (SURVEY CORPS / ATTACK TITAN) --- */
+        :root {
+            /* Colores: Verde Legión, Marrón Correas, Rojo Titán */
+            --eren-green: #2E7D32;       /* Verde Capa de la Legión */
+            --eren-dark: #1b261b;        /* Fondo oscuro militar/bosque */
+            --eren-brown: #5D4037;       /* Cuero del equipo ODM */
+            --eren-titan: #BF360C;       /* Rojo/Naranja de la transformación */
+            --steam-white: #CFD8DC;      /* Vapor de titán */
+            
+            --glass-bg: rgba(46, 125, 50, 0.1); 
+            --glass-border: rgba(46, 125, 50, 0.4);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Oscuridad y Bosque de Árboles Gigantes */
+            background: linear-gradient(135deg, #0e1111 0%, var(--eren-dark) 100%);
+            color: var(--steam-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Vapor y Cenizas) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(207, 216, 220, 0.1) 1px, transparent 1px),
+                radial-gradient(rgba(46, 125, 50, 0.1) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            opacity: 0.5;
+            animation: moveBackground 50s linear infinite;
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--eren-green); width: 0%;
+            box-shadow: 0 0 15px var(--eren-titan); /* Resplandor de transformación */
+            transition: width 0.5s ease, background 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 55vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* IMAGEN DINÁMICA DE EREN */
+            background-image: linear-gradient(to bottom, rgba(14, 17, 17, 0.6), rgba(14, 17, 17, 1)), url('imagenes/EREN.png');
+            background-size: cover;
+            background-position: center 25%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--eren-green);
+            transition: border-color 0.5s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 4px;
+            color: var(--steam-white);
+            text-shadow: 0 0 20px var(--eren-green), 2px 2px 0 var(--eren-brown);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 6px;
+            color: var(--steam-white);
+            background: rgba(46, 125, 50, 0.7);
+            padding: 8px 30px;
+            margin-top: 15px;
+            border: 1px solid var(--steam-white);
+            text-transform: uppercase;
+            font-weight: bold;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+
+        /* --- SELECTOR DE MODO --- */
+        .mode-selector {
+            margin-top: 25px;
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 1s ease-out 0.7s backwards;
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #555;
+            color: var(--steam-white);
+            padding: 10px 25px;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--eren-green);
+            box-shadow: 0 0 15px rgba(46, 125, 50, 0.5);
+        }
+
+        .mode-btn.active {
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        /* Estilos específicos para botón activo según modo */
+        .mode-btn.active[data-mode="calistenia"] {
+            background: var(--eren-green);
+            border-color: var(--eren-green);
+        }
+        .mode-btn.active[data-mode="gym"] {
+            background: var(--eren-titan);
+            border-color: var(--eren-titan);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(30, 40, 30, 0.6); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--eren-green);
+            border-left: 5px solid var(--eren-titan);
+            padding: 40px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            margin-bottom: 50px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: #b0bec5;
+        }
+        .quote-text strong { 
+            color: var(--eren-green); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(46, 125, 50, 0.4);
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(46, 125, 50, 0.3);
+            border-radius: 4px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(46, 125, 50, 0.2);
+            border-color: var(--eren-green);
+            box-shadow: 0 0 20px rgba(46, 125, 50, 0.5);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: var(--eren-green);
+            border-color: var(--eren-titan);
+            color: var(--white);
+            transform: scale(0.95);
+            box-shadow: 0 0 15px var(--eren-green);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1b261b, #000000);
+            border: 2px solid var(--eren-green);
+            box-shadow: 0 0 50px rgba(46, 125, 50, 0.2);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 4px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.2s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--eren-green); color: var(--steam-white); padding: 5px 15px; border-radius: 0px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--steam-white); text-transform: uppercase; text-shadow: 0 0 5px var(--eren-green); }
+        .modal-desc { line-height: 1.8; color: #cfd8dc; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 2px solid var(--eren-green); color: var(--eren-green);
+            font-family: var(--font-title); font-size: 1.3rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--eren-green); 
+            color: var(--white); 
+            box-shadow: 0 0 30px var(--eren-green);
+        }
+
+        /* --- ESTADÍSTICAS --- */
+        .stats-container {
+            text-align: center; margin-bottom: 30px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--eren-green); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+            margin-bottom: 15px;
+        }
+        
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--steam-white);
+            border-color: var(--eren-green);
+            box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+            .mode-selector { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header id="mainHeader">
+        <h1>Avanza Siempre</h1>
+        <div class="subtitle">Entrenamiento Legión / Titán</div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btnCalisthenics" data-mode="calistenia" onclick="setMode('calistenia')">Estilo Legión (Calistenia)</button>
+            <button class="mode-btn" id="btnGym" data-mode="gym" onclick="setMode('gym')">Estilo Titán (Gym)</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Si ganamos, vivimos. Si perdemos, morimos. Si no luchas, no puedes ganar.<br>
+                <strong>¡TATAKAE! ¡TATAKAE!</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                MODO: <span id="currentModeText">LEGIÓN</span> | LIBERTAD: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Progreso Actual</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+            </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--eren-green); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">Ofrecer Corazón</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN Y ESTADO DE MODOS ---
+        let currentDayIndex = 0;
+        let currentMode = 'calistenia'; 
+
+        // Base de datos en memoria (se sincroniza con LocalStorage)
+        let progressData = {
+            'calistenia': new Set(),
+            'gym': new Set()
+        };
+
+        // --- 2. LÓGICA DE CAMBIO DE MODO ---
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Actualizar botones visualmente
+            document.getElementById('btnCalisthenics').classList.remove('active');
+            document.getElementById('btnGym').classList.remove('active');
+            
+            const header = document.getElementById('mainHeader');
+
+            if(mode === 'calistenia') {
+                document.getElementById('btnCalisthenics').classList.add('active');
+                document.getElementById('currentModeText').innerText = "LEGIÓN";
+                // Estilos específicos Legión
+                header.style.borderBottomColor = "var(--eren-green)";
+                document.getElementById('progressBar').style.background = "var(--eren-green)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 15px var(--eren-green)";
+            } else {
+                document.getElementById('btnGym').classList.add('active');
+                document.getElementById('currentModeText').innerText = "TITÁN";
+                // Estilos específicos Titán
+                header.style.borderBottomColor = "var(--eren-titan)";
+                document.getElementById('progressBar').style.background = "var(--eren-titan)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 15px var(--eren-titan)";
+            }
+
+            // Al cambiar de modo, refrescamos el grid y la barra de progreso
+            refreshGrid();
+            updateProgress();
+        }
+
+        // --- 3. FUNCIONES DE ACTUALIZACIÓN VISUAL ---
+        function refreshGrid() {
+            // 1. Limpiar visualmente todos los días
+            const allDays = document.querySelectorAll('.day-card');
+            allDays.forEach(card => {
+                card.classList.remove('completed');
+                card.style.borderColor = ""; 
+                card.style.background = "";
+                // Restaurar número
+                const dayNum = card.id.split('-')[1];
+                card.innerHTML = `<span class="day-number">${dayNum}</span>`;
+            });
+
+            // 2. Marcar solo los días completados EN EL MODO ACTUAL
+            const currentSet = progressData[currentMode];
+            currentSet.forEach(dayIndex => {
+                const card = document.getElementById(`day-${dayIndex}`);
+                if (card) {
+                    card.classList.add('completed');
+                    if(currentMode === 'gym') {
+                        card.style.background = "var(--eren-titan)";
+                        card.style.borderColor = "#FF5722";
+                        // Ícono de Rayo/Transformación
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">⚡</span>`;
+                    } else {
+                        // Ícono de Llave/Alas
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🗝️</span>`;
+                    }
+                }
+            });
+        }
+
+        // --- 4. LÓGICA DE EJERCICIOS (SEPARADA POR MODO) ---
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 20 + (cycle * 2);
+            
+            let title = "", description = "";
+
+            if (currentMode === 'calistenia') {
+                // --- MODO LEGIÓN (CALISTENIA / MOVILIDAD) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "MANIOBRAS TRIDIMENSIONALES";
+                        description = `<strong>Enfoque:</strong> Core de acero y movilidad aérea.<br><br>• Sentadillas con salto explosivo: 4 x 15<br>• L-Sits (Colgado de barra): 4 series al fallo<br>• Zancadas con salto (Jumping Lunges): ${reps} reps<br>• Plancha Spider-man: 4 min total`;
+                        break;
+                    case 2: 
+                        title = "AGILIDAD DE ACKERMAN";
+                        description = `<strong>Enfoque:</strong> Velocidad letal.<br><br>• Sprints (Huida de Titanes): 8 x 50m<br>• Burpees explosivos: ${reps} reps<br>• Dominadas rápidas: 4 x 8<br>• Mountain Climbers: 4 x 50`;
+                        break;
+                    case 3: 
+                        title = "COMBATE CUERPO A CUERPO";
+                        description = `<strong>Enfoque:</strong> Estilo Annie/Militar.<br><br>• Boxeo de sombra (técnica pura): 15 min<br>• Patadas bajas y altas (Muay Thai): 50 por pierna<br>• Fondos en paralelas: 4 x 15<br>• Abdominales en V: 4 x 20`;
+                        break;
+                    case 4: 
+                        title = "EXPEDICIÓN EXTRAMUROS";
+                        description = `<strong>Enfoque:</strong> Resistencia pura.<br><br>• Carrera larga distancia: 8-10 km<br>• Saltos al cajón (Muro): 4 x 15<br>• Escaleras (Subir/Bajar): 20 min<br>• Resistencia mental (Plancha isométrica máxima duración)`;
+                        break;
+                    case 0: 
+                        title = "MEMORIAS DEL SÓTANO";
+                        description = `<strong>Enfoque:</strong> Planificación y descanso.<br><br>• Visualización de objetivos (Tatakae)<br>• Estiramientos completos<br>• Comida abundante<br>• Dormir para recuperar`;
+                        break;
+                }
+            } else {
+                // --- MODO TITÁN (GYM / FUERZA BRUTA) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "FUERZA DE ATAQUE (PUSH)";
+                        description = `<strong>Enfoque:</strong> Levantar la roca (Pecho/Hombro).<br><br>• Press de Banca Pesado: 5 x 5<br>• Press Militar (Overhead): 4 x 8<br>• Fondos con lastre: 3 x 10<br>• Extensiones de Tríceps: 4 x 12<br><em>*¡Mueve el peso con ira!</em>`;
+                        break;
+                    case 2: 
+                        title = "ENDURECIMIENTO (PULL)";
+                        description = `<strong>Enfoque:</strong> Espalda blindada y bíceps.<br><br>• Peso Muerto: 5 x 5 (Pesado)<br>• Dominadas con lastre: 4 x 8<br>• Remo con barra (Pendlay): 4 x 10<br>• Curl de Bíceps Martillo: 4 x 12`;
+                        break;
+                    case 3: 
+                        title = "PASO DEL COLOSAL (LEGS)";
+                        description = `<strong>Enfoque:</strong> Piernas que destruyen murallas.<br><br>• Sentadilla Profunda: 5 x 5<br>• Prensa de Piernas (Full Weight): 4 x 10<br>• Peso Muerto Rumano: 4 x 10<br>• Zancadas con mancuernas: 3 x 12 por pierna`;
+                        break;
+                    case 4: 
+                        title = "MARTILLO DE GUERRA (ACCESORIOS)";
+                        description = `<strong>Enfoque:</strong> Construcción de armas (Hombros/Brazos).<br><br>• Elevaciones laterales: 5 x 15<br>• Facepulls: 4 x 20<br>• Curl de antebrazo: 4 x 20<br>• Encogimientos (Trapecio): 4 x 15`;
+                        break;
+                    case 0: 
+                        title = "CAMINOS (REGENERACIÓN)";
+                        description = `<strong>Enfoque:</strong> Recuperación de titán.<br><br>• Comer masivamente (Proteína)<br>• Masaje o Foam Rolling<br>• Dormir 9+ horas<br>• Hidratación total`;
+                        break;
+                }
+            }
+            return { title, description };
+        }
+
+        // --- 5. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            // Animación de entrada
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 6. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            
+            // Color del botón según modo
+            const btn = modal.querySelector('.btn-action');
+            if(currentMode === 'gym') {
+                btn.style.borderColor = 'var(--eren-titan)';
+                btn.style.color = 'var(--eren-titan)';
+                btn.innerText = "TRANSFORMACIÓN COMPLETA";
+                btn.onmouseenter = () => { btn.style.background = 'var(--eren-titan)'; btn.style.color = 'white'; };
+                btn.onmouseleave = () => { btn.style.background = 'transparent'; btn.style.color = 'var(--eren-titan)'; };
+            } else {
+                btn.style.borderColor = 'var(--eren-green)';
+                btn.style.color = 'var(--eren-green)';
+                btn.innerText = "OFRECER CORAZÓN";
+                btn.onmouseenter = () => { btn.style.background = 'var(--eren-green)'; btn.style.color = 'white'; };
+                btn.onmouseleave = () => { btn.style.background = 'transparent'; btn.style.color = 'var(--eren-green)'; };
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 7. SISTEMA DE COMPLETADO Y PERSISTENCIA (LOCALSTORAGE) ---
+        
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            
+            // Verificamos si ya está completado en el modo ACTUAL
+            if(progressData[currentMode].has(currentDayIndex)) return;
+
+            // Agregamos al Set del modo actual
+            progressData[currentMode].add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            if(currentMode === 'gym') {
+                card.style.background = "var(--eren-titan)";
+                card.style.borderColor = "#FF5722";
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">⚡</span>`;
+            } else {
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🗝️</span>`; 
+            }
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            // Calcular porcentaje basado solo en el modo actual
+            const percent = progressData[currentMode].size; 
+            
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+        function saveData() {
+            // Guardamos dos items separados para que no se mezclen los modos
+            localStorage.setItem('eren_calistenia', JSON.stringify([...progressData.calistenia]));
+            localStorage.setItem('eren_gym', JSON.stringify([...progressData.gym]));
+        }
+
+        function loadData() {
+            // Cargar Calistenia
+            const savedCalistenia = localStorage.getItem('eren_calistenia');
+            if (savedCalistenia) {
+                progressData.calistenia = new Set(JSON.parse(savedCalistenia));
+            }
+
+            // Cargar Gym
+            const savedGym = localStorage.getItem('eren_gym');
+            if (savedGym) {
+                progressData.gym = new Set(JSON.parse(savedGym));
+            }
+
+            // Refrescar UI inicial
+            refreshGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            const modeName = currentMode === 'calistenia' ? "LEGIÓN (Calistenia)" : "TITÁN (Gym)";
+            if(confirm(`¿Estás seguro de BORRAR todo el progreso del modo ${modeName}?`)) {
+                // Borrar solo del set actual
+                progressData[currentMode].clear();
+                
+                // Guardar el estado vacío
+                saveData();
+                
+                // Actualizar visualmente
+                refreshGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 35; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                
+                // Colores dinámicos según modo
+                let colors;
+                if(currentMode === 'gym') {
+                    // Colores Titán: Rojo, Naranja, Amarillo (Chispas)
+                    colors = ['#BF360C', '#FF5722', '#FFD600'];
+                } else {
+                    // Colores Legión: Verde, Blanco (Vapor), Marrón
+                    colors = ['#2E7D32', '#CFD8DC', '#5D4037'];
+                }
+                
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+        
+        // Inicializar al cargar la página
+        loadData();
+
+    </script>
+</body>
+</html>

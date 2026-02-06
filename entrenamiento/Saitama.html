@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Saitama - Limit Breaker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES SAITAMA (ONE PUNCH) --- */
+        :root {
+            /* Colores Oficiales */
+            --saitama-yellow: #FFD600;   /* Traje amarillo intenso */
+            --saitama-red: #D50000;      /* Guantes rojos */
+            --saitama-white: #FFFFFF;    /* Capa blanca */
+            --saitama-skin: #FFCCBC;     /* Tono piel */
+            --hero-dark: #212121;        /* Negro cómic para contraste */
+            
+            --glass-bg: rgba(255, 214, 0, 0.1);
+            --glass-border: rgba(255, 214, 0, 0.4);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--hero-dark) 0%, #3e2723 100%);
+            color: var(--saitama-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Golpes Normales Consecutivos) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(255, 214, 0, 0.15) 1px, transparent 1px),
+                radial-gradient(rgba(213, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            opacity: 0.6;
+            animation: moveBackground 30s linear infinite; /* Rápido como Saitama */
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--saitama-yellow); width: 0%;
+            box-shadow: 0 0 15px var(--saitama-yellow), 0 0 5px var(--saitama-red);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 55vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* IMAGEN DINÁMICA DE SAITAMA */
+            background-image: linear-gradient(to bottom, rgba(33, 33, 33, 0.6), rgba(33, 33, 33, 1)), url('imagenes/SAITAMA.png');
+            background-size: cover;
+            background-position: center 20%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--saitama-yellow);
+            transition: border-color 0.5s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 3px;
+            color: var(--saitama-white);
+            text-shadow: 4px 4px 0px var(--saitama-red), 0 0 20px var(--saitama-yellow);
+            animation: fadeInDown 1s ease-out;
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--hero-dark);
+            background: var(--saitama-yellow);
+            padding: 8px 30px;
+            margin-top: 15px;
+            border: 2px solid var(--saitama-red);
+            text-transform: uppercase;
+            font-weight: 800;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+            box-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
+        }
+
+        /* --- SELECTOR DE MODO --- */
+        .mode-selector {
+            margin-top: 25px;
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 1s ease-out 0.7s backwards;
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: rgba(33, 33, 33, 0.9);
+            border: 2px solid var(--saitama-white);
+            color: var(--saitama-white);
+            padding: 10px 25px;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--saitama-yellow);
+            box-shadow: 0 0 15px rgba(255, 214, 0, 0.4);
+            color: var(--saitama-yellow);
+        }
+
+        .mode-btn.active {
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0,0,0,0.8);
+        }
+        
+        /* Estilos específicos para botón activo según modo */
+        .mode-btn.active[data-mode="calistenia"] {
+            background: var(--saitama-yellow);
+            border-color: var(--saitama-red);
+            color: var(--hero-dark);
+        }
+        .mode-btn.active[data-mode="gym"] {
+            background: var(--saitama-red);
+            border-color: var(--saitama-white);
+            color: var(--saitama-white);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--saitama-yellow);
+            border-left: 5px solid var(--saitama-red);
+            padding: 40px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            margin-bottom: 50px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: #f5f5f5;
+        }
+        .quote-text strong { 
+            color: var(--saitama-yellow); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 214, 0, 0.3);
+            border-radius: 2px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 214, 0, 0.2);
+            border-color: var(--saitama-yellow);
+            box-shadow: 0 0 25px rgba(255, 214, 0, 0.5);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            /* Se define en JS */
+            transform: scale(0.95);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #212121, #000000);
+            border: 4px solid var(--saitama-yellow);
+            box-shadow: 0 0 50px rgba(255, 214, 0, 0.2);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 2px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.2s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--saitama-yellow); color: var(--hero-dark); padding: 5px 15px; border-radius: 0px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--saitama-white); text-transform: uppercase; text-shadow: 2px 2px 0 var(--saitama-red); }
+        .modal-desc { line-height: 1.8; color: #e0e0e0; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: var(--saitama-red); border: none; color: var(--saitama-white);
+            font-family: var(--font-title); font-size: 1.4rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;
+            box-shadow: 4px 4px 0 #000;
+        }
+        .btn-action:hover { 
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+            background: #ff1744;
+        }
+        .btn-action:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0 #000;
+        }
+
+        /* --- ESTADÍSTICAS Y RESET --- */
+        .stats-container {
+            text-align: center; margin-bottom: 30px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--saitama-yellow); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 2px 2px 0 var(--hero-dark);
+            margin-bottom: 15px;
+        }
+        
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--hero-dark);
+            background: var(--saitama-yellow);
+            border-color: var(--saitama-yellow);
+            box-shadow: 0 0 15px rgba(255, 214, 0, 0.6);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+            .mode-selector { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header id="mainHeader">
+        <h1>Limit Breaker</h1>
+        <div class="subtitle">Entrenamiento por Diversión</div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btnCalisthenics" data-mode="calistenia" onclick="setMode('calistenia')">Estándar (Calistenia)</button>
+            <button class="mode-btn" id="btnGym" data-mode="gym" onclick="setMode('gym')">Serie Mortal (Gym)</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "¡100 Flexiones! ¡100 Abdominales! ¡100 Sentadillas! ¡Y correr 10 kilómetros! <br>
+                <strong>¡HAZLO TODOS LOS DÍAS HASTA QUE TE QUEDES CALVO!</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                MODO: <span id="currentModeText" style="color:var(--saitama-white)">ESTÁNDAR</span> | PODER: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Progreso Actual</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+            </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--saitama-red); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">¡UN GOLPE!</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN Y ESTADO DE MODOS ---
+        let currentDayIndex = 0;
+        let currentMode = 'calistenia'; 
+
+        // Base de datos en memoria (se sincroniza con LocalStorage)
+        let progressData = {
+            'calistenia': new Set(),
+            'gym': new Set()
+        };
+
+        // --- 2. LÓGICA DE CAMBIO DE MODO ---
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Actualizar botones visualmente
+            document.getElementById('btnCalisthenics').classList.remove('active');
+            document.getElementById('btnGym').classList.remove('active');
+            
+            const header = document.getElementById('mainHeader');
+            const subtitle = document.querySelector('.subtitle');
+
+            if(mode === 'calistenia') {
+                document.getElementById('btnCalisthenics').classList.add('active');
+                document.getElementById('currentModeText').innerText = "ESTÁNDAR";
+                // Estilo Estándar (Amarillo/Héroe)
+                header.style.borderBottomColor = "var(--saitama-yellow)";
+                subtitle.style.background = "var(--saitama-yellow)";
+                subtitle.style.color = "var(--hero-dark)";
+                subtitle.style.borderColor = "var(--saitama-red)";
+                subtitle.innerText = "ENTRENAMIENTO ESTÁNDAR";
+                document.getElementById('progressBar').style.background = "var(--saitama-yellow)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 15px var(--saitama-yellow)";
+            } else {
+                document.getElementById('btnGym').classList.add('active');
+                document.getElementById('currentModeText').innerText = "SERIE MORTAL";
+                // Estilo Serie Mortal (Rojo/Serio)
+                header.style.borderBottomColor = "var(--saitama-red)";
+                subtitle.style.background = "var(--saitama-red)";
+                subtitle.style.color = "var(--saitama-white)";
+                subtitle.style.borderColor = "var(--saitama-white)";
+                subtitle.innerText = "SERIE GRAVE: FUERZA";
+                document.getElementById('progressBar').style.background = "var(--saitama-red)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 15px var(--saitama-red)";
+            }
+
+            // Refrescar Grid y Barra
+            refreshGrid();
+            updateProgress();
+        }
+
+        // --- 3. FUNCIONES DE ACTUALIZACIÓN VISUAL ---
+        function refreshGrid() {
+            // 1. Limpiar visualmente todos los días
+            const allDays = document.querySelectorAll('.day-card');
+            allDays.forEach(card => {
+                card.classList.remove('completed');
+                card.style.background = ""; 
+                card.style.borderColor = ""; 
+                card.style.color = "";
+                
+                // Restaurar el número normal
+                const dayNum = card.id.split('-')[1];
+                card.innerHTML = `<span class="day-number">${dayNum}</span>`;
+            });
+
+            // 2. Marcar solo los días completados EN EL MODO ACTUAL
+            const currentSet = progressData[currentMode];
+            currentSet.forEach(dayIndex => {
+                const card = document.getElementById(`day-${dayIndex}`);
+                if (card) {
+                    card.classList.add('completed');
+                    
+                    if (currentMode === 'gym') {
+                        // Estilo Gym (Serie Mortal / Rojo)
+                        card.style.background = "var(--saitama-red)";
+                        card.style.borderColor = "var(--saitama-white)";
+                        card.style.color = "var(--saitama-white)";
+                        card.innerHTML = `<span class="day-number" style="font-size:3rem">👊</span>`; // Puño
+                    } else {
+                        // Estilo Calistenia (Estándar / Amarillo)
+                        card.style.background = "var(--saitama-yellow)";
+                        card.style.borderColor = "var(--saitama-red)";
+                        card.style.color = "var(--hero-dark)";
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🥚</span>`; // Huevo/Calvo
+                    }
+                }
+            });
+        }
+
+        // --- 4. LÓGICA DE EJERCICIOS (SEPARADA) ---
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            // La progresión de Saitama es brutal
+            let baseReps = 20 + (cycle * 5); 
+            
+            let title = "", description = "";
+
+            if (currentMode === 'calistenia') {
+                // --- MODO ESTÁNDAR (CALISTENIA / EL RETO) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "100 FLEXIONES (PROGRESIÓN)";
+                        description = `<strong>Objetivo:</strong> Pecho de Acero.<br><br>• Flexiones normales: 4 x ${baseReps}<br>• Flexiones diamante: 3 x ${baseReps - 5}<br>• Fondos en suelo: 4 x 15<br>• Isometría de empuje: 1 min`;
+                        break;
+                    case 2: 
+                        title = "100 SENTADILLAS (VELOCIDAD)";
+                        description = `<strong>Objetivo:</strong> Piernas que rompen el suelo.<br><br>• Sentadillas libres (Rápidas): 4 x ${baseReps + 10}<br>• Zancadas con salto: 4 x 20<br>• Sentadilla isométrica: 3 min acumulados<br>• Saltos verticales máximos: 20 reps`;
+                        break;
+                    case 3: 
+                        title = "100 ABDOMINALES (CORE)";
+                        description = `<strong>Objetivo:</strong> Tanquear golpes.<br><br>• Crunches clásicos: 4 x ${baseReps + 10}<br>• Elevación de piernas: 4 x 15<br>• Plancha abdominal: 3 min<br>• Russian Twist: 50 reps`;
+                        break;
+                    case 4: 
+                        title = "10 KM CORRER (RESISTENCIA)";
+                        description = `<strong>Objetivo:</strong> Llegar a la oferta del súper.<br><br>• Carrera continua: 5-8km (Progresión a 10km)<br>• Sprints de 100m: 10 series<br>• Burpees (Castigo): ${baseReps} reps<br>• Saltos de cuerda: 10 min`;
+                        break;
+                    case 0: 
+                        title = "DÍA DEL HÉROE (ACTIVO)";
+                        description = `<strong>Objetivo:</strong> Patrullar la ciudad.<br><br>• Caminata larga o Trote suave<br>• Estiramientos completos<br>• Comer vegetales y algas<br>• <strong>SIN AIRE ACONDICIONADO</strong>`;
+                        break;
+                }
+            } else {
+                // --- MODO SERIE MORTAL (GYM / FUERZA ABSURDA) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "SERIE GRAVE: EMPUJE";
+                        description = `<strong>Objetivo:</strong> Un golpe.<br><br>• Press de Banca (Explosivo): 5 x 5<br>• Press Militar (Hombros): 4 x 8<br>• Fondos lastrados: 4 x 10<br>• Rompecráneos: 4 x 12`;
+                        break;
+                    case 2: 
+                        title = "SERIE GRAVE: JALÓN";
+                        description = `<strong>Objetivo:</strong> Levantar la base de la asociación.<br><br>• Peso Muerto: 5 x 3 (Pesado)<br>• Dominadas con lastre: 4 x 8<br>• Remo Pendlay: 5 x 5<br>• Curl de Bíceps estricto: 4 x 10`;
+                        break;
+                    case 3: 
+                        title = "SERIE GRAVE: SALTO LATERAL";
+                        description = `<strong>Objetivo:</strong> Piernas.<br><br>• Sentadilla Profunda: 5 x 5<br>• Prensa de Piernas (Full): 4 x 10<br>• Zancadas pesadas: 3 x 20m<br>• Elevación de Gemelos: 5 x 20`;
+                        break;
+                    case 4: 
+                        title = "SERIE GRAVE: DESTRUCCIÓN";
+                        description = `<strong>Objetivo:</strong> Hipertrofia Total.<br><br>• Clean & Press: 4 x 6<br>• Facepulls: 4 x 20<br>• Encogimientos: 4 x 15<br>• Paseo del granjero: 4 vueltas`;
+                        break;
+                    case 0: 
+                        title = "DÍA DE OFERTAS";
+                        description = `<strong>Objetivo:</strong> Descanso mental.<br><br>• Comer carne barata (Alta proteína)<br>• Dormir 9 horas<br>• Leer manga<br>• Baño relajante`;
+                        break;
+                }
+            }
+            return { title, description };
+        }
+
+        // --- 5. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 6. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            
+            // Personalizar botón
+            const btn = modal.querySelector('.btn-action');
+            if(currentMode === 'gym') {
+                btn.innerText = "SERIE GRAVE: CUMPLIDA";
+                btn.style.background = "var(--saitama-red)";
+                btn.style.color = "var(--saitama-white)";
+            } else {
+                btn.innerText = "¡CUMPLIDO!";
+                btn.style.background = "var(--saitama-yellow)";
+                btn.style.color = "var(--hero-dark)";
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 7. SISTEMA DE COMPLETADO Y PERSISTENCIA (LOCALSTORAGE) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            
+            if(progressData[currentMode].has(currentDayIndex)) return;
+
+            progressData[currentMode].add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            if (currentMode === 'gym') {
+                card.style.background = "var(--saitama-red)";
+                card.style.borderColor = "var(--saitama-white)";
+                card.style.color = "var(--saitama-white)";
+                card.innerHTML = `<span class="day-number" style="font-size:3rem">👊</span>`; 
+            } else {
+                card.style.background = "var(--saitama-yellow)";
+                card.style.borderColor = "var(--saitama-red)";
+                card.style.color = "var(--hero-dark)";
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🥚</span>`; 
+            }
+            
+            createParticles(card);
+            updateProgress();
+            saveData(); // GUARDAR
+        }
+
+        function updateProgress() {
+            const percent = progressData[currentMode].size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+        function saveData() {
+            localStorage.setItem('saitama_calistenia', JSON.stringify([...progressData.calistenia]));
+            localStorage.setItem('saitama_gym', JSON.stringify([...progressData.gym]));
+        }
+
+        function loadData() {
+            // Cargar Calistenia
+            const savedCalistenia = localStorage.getItem('saitama_calistenia');
+            if (savedCalistenia) {
+                progressData.calistenia = new Set(JSON.parse(savedCalistenia));
+            }
+
+            // Cargar Gym
+            const savedGym = localStorage.getItem('saitama_gym');
+            if (savedGym) {
+                progressData.gym = new Set(JSON.parse(savedGym));
+            }
+
+            // Refrescar UI inicial
+            refreshGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            const modeName = currentMode === 'calistenia' ? "ESTÁNDAR (Calistenia)" : "SERIE MORTAL (Gym)";
+            if(confirm(`¿Estás seguro? Perderás todo el progreso de ${modeName}.`)) {
+                // Borrar solo del set actual
+                progressData[currentMode].clear();
+                
+                // Guardar el estado vacío
+                saveData();
+                
+                // Actualizar visualmente
+                refreshGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                
+                let colors;
+                if(currentMode === 'gym') {
+                    // Rojo, Blanco, Negro
+                    colors = ['#D50000', '#FFFFFF', '#212121'];
+                } else {
+                    // Amarillo, Rojo, Blanco
+                    colors = ['#FFD600', '#D50000', '#FFFFFF'];
+                }
+
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 500,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+        
+        // Inicializar al cargar
+        loadData();
+    </script>
+</body>
+</html>

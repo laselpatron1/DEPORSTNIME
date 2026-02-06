@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Wild Card - The Fallen Hero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES KUNIGAMI (WILD CARD) --- */
+        :root {
+            /* Colores: Naranja Héroe, Negro Wild Card, Gris Acero */
+            --kuni-orange: #FF6D00;      /* Naranja intenso (Aura/Pelo) */
+            --kuni-dark: #121212;        /* Negro del traje Wild Card */
+            --kuni-grey: #37474F;        /* Gris metálico de las instalaciones */
+            --kuni-fire: #FF3D00;        /* Naranja rojizo para énfasis */
+            --white: #eceff1;
+            
+            --glass-bg: rgba(255, 109, 0, 0.1); 
+            --glass-border: rgba(255, 109, 0, 0.4);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: La oscuridad de la puerta Wild Card */
+            background: linear-gradient(135deg, #000000 0%, var(--kuni-grey) 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Chispas de fisicalidad) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(255, 109, 0, 0.15) 1px, transparent 1px),
+                radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0.5;
+            animation: moveBackground 40s linear infinite;
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--kuni-orange); width: 0%;
+            box-shadow: 0 0 15px var(--kuni-orange), 0 0 30px var(--kuni-fire); /* Resplandor explosivo */
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 55vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* IMAGEN DINÁMICA DE KUNIGAMI */
+            background-image: linear-gradient(to bottom, rgba(18, 18, 18, 0.6), rgba(18, 18, 18, 1)), url('imagenes/KUNIGAMI.png');
+            background-size: cover;
+            background-position: center 20%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--kuni-orange);
+            transition: border-color 0.5s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 3px;
+            color: var(--white);
+            text-shadow: 4px 4px 0px var(--kuni-dark), 0 0 25px var(--kuni-orange);
+            animation: fadeInDown 1s ease-out;
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--kuni-dark);
+            background: var(--kuni-orange);
+            padding: 8px 30px;
+            margin-top: 15px;
+            border: 1px solid var(--white);
+            text-transform: uppercase;
+            font-weight: 800;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+            box-shadow: 0 0 20px rgba(255, 109, 0, 0.4);
+        }
+
+        /* --- SELECTOR DE MODO --- */
+        .mode-selector {
+            margin-top: 25px;
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 1s ease-out 0.7s backwards;
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: rgba(18, 18, 18, 0.9);
+            border: 2px solid var(--kuni-grey);
+            color: var(--white);
+            padding: 10px 25px;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--kuni-orange);
+            box-shadow: 0 0 15px rgba(255, 109, 0, 0.4);
+        }
+
+        .mode-btn.active {
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0,0,0,0.8);
+        }
+        
+        /* Estilos específicos para botón activo según modo */
+        .mode-btn.active[data-mode="calistenia"] {
+            background: var(--kuni-dark);
+            border-color: var(--kuni-fire);
+            color: var(--kuni-fire);
+        }
+        .mode-btn.active[data-mode="gym"] {
+            background: var(--kuni-orange);
+            border-color: var(--kuni-orange);
+            color: var(--kuni-dark);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(20, 20, 20, 0.8); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--kuni-orange);
+            border-right: 5px solid var(--kuni-fire);
+            padding: 40px;
+            border-radius: 2px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            margin-bottom: 50px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: #cfd8dc;
+        }
+        .quote-text strong { 
+            color: var(--kuni-orange); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 61, 0, 0.5);
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 109, 0, 0.3);
+            border-radius: 2px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 109, 0, 0.2);
+            border-color: var(--kuni-orange);
+            box-shadow: 0 0 25px rgba(255, 109, 0, 0.5);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: var(--kuni-orange);
+            border-color: var(--kuni-fire);
+            color: var(--kuni-dark);
+            transform: scale(0.95);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #212121, #000000);
+            border: 2px solid var(--kuni-orange);
+            box-shadow: 0 0 50px rgba(255, 109, 0, 0.2);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 2px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.2s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--kuni-orange); color: var(--kuni-dark); padding: 5px 15px; border-radius: 0px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--white); text-transform: uppercase; text-shadow: 0 0 5px var(--kuni-orange); }
+        .modal-desc { line-height: 1.8; color: #bdbdbd; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 2px solid var(--kuni-orange); color: var(--kuni-orange);
+            font-family: var(--font-title); font-size: 1.3rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--kuni-orange); 
+            color: var(--kuni-dark); 
+            box-shadow: 0 0 30px var(--kuni-orange);
+        }
+
+        /* --- ESTADÍSTICAS Y RESET --- */
+        .stats-container {
+            text-align: center; margin-bottom: 30px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--kuni-orange); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 109, 0, 0.5);
+            margin-bottom: 15px;
+        }
+        
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--kuni-dark);
+            background: var(--kuni-orange);
+            border-color: var(--kuni-orange);
+            box-shadow: 0 0 15px rgba(255, 109, 0, 0.6);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+            .mode-selector { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header id="mainHeader">
+        <h1>Wild Card</h1>
+        <div class="subtitle">Despierta al Monstruo</div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btnCalisthenics" data-mode="calistenia" onclick="setMode('calistenia')">Wild Card (Calistenia)</button>
+            <button class="mode-btn" id="btnGym" data-mode="gym" onclick="setMode('gym')">Cyborg (Gym)</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Ya no soy un héroe. Tiré esa basura a la basura para sobrevivir en ese infierno.<br>
+                <strong>Ahora solo existo para ser el mejor del mundo.</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                MODO: <span id="currentModeText" style="color:white">WILD CARD</span> | FÍSICO: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Progreso Actual</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+            </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--kuni-orange); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">Sobrevivir</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN Y ESTADO DE MODOS ---
+        let currentDayIndex = 0;
+        let currentMode = 'calistenia'; 
+
+        // Base de datos en memoria (se sincroniza con LocalStorage)
+        let progressData = {
+            'calistenia': new Set(),
+            'gym': new Set()
+        };
+
+        // --- 2. LÓGICA DE CAMBIO DE MODO ---
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Actualizar botones visualmente
+            document.getElementById('btnCalisthenics').classList.remove('active');
+            document.getElementById('btnGym').classList.remove('active');
+            
+            const header = document.getElementById('mainHeader');
+            const subtitle = document.querySelector('.subtitle');
+
+            if(mode === 'calistenia') {
+                document.getElementById('btnCalisthenics').classList.add('active');
+                document.getElementById('currentModeText').innerText = "WILD CARD";
+                // Estilo Wild Card (Oscuro/Supervivencia)
+                header.style.borderBottomColor = "var(--kuni-fire)";
+                subtitle.style.background = "var(--kuni-dark)";
+                subtitle.style.color = "var(--kuni-orange)";
+                subtitle.innerText = "SOBREVIVE AL INFIERNO";
+                document.getElementById('progressBar').style.background = "var(--kuni-fire)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 15px var(--kuni-fire)";
+            } else {
+                document.getElementById('btnGym').classList.add('active');
+                document.getElementById('currentModeText').innerText = "CYBORG";
+                // Estilo Cyborg (Naranja/Perfecto)
+                header.style.borderBottomColor = "var(--kuni-orange)";
+                subtitle.style.background = "var(--kuni-orange)";
+                subtitle.style.color = "var(--kuni-dark)";
+                subtitle.innerText = "COPIA PERFECTA";
+                document.getElementById('progressBar').style.background = "var(--kuni-orange)";
+                document.getElementById('progressBar').style.boxShadow = "0 0 15px var(--kuni-orange)";
+            }
+
+            // Refrescar Grid y Barra
+            refreshGrid();
+            updateProgress();
+        }
+
+        // --- 3. FUNCIONES DE ACTUALIZACIÓN VISUAL ---
+        function refreshGrid() {
+            // 1. Limpiar visualmente todos los días
+            const allDays = document.querySelectorAll('.day-card');
+            allDays.forEach(card => {
+                card.classList.remove('completed');
+                card.style.background = ""; 
+                card.style.borderColor = ""; 
+                card.style.color = "";
+                
+                // Restaurar el número normal
+                const dayNum = card.id.split('-')[1];
+                card.innerHTML = `<span class="day-number">${dayNum}</span>`;
+            });
+
+            // 2. Marcar solo los días completados EN EL MODO ACTUAL
+            const currentSet = progressData[currentMode];
+            currentSet.forEach(dayIndex => {
+                const card = document.getElementById(`day-${dayIndex}`);
+                if (card) {
+                    card.classList.add('completed');
+                    
+                    if (currentMode === 'gym') {
+                        // Estilo Gym (Cyborg / Naranja sólido)
+                        card.style.background = "var(--kuni-orange)";
+                        card.style.borderColor = "var(--white)";
+                        card.style.color = "var(--kuni-dark)";
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🦾</span>`; 
+                    } else {
+                        // Estilo Calistenia (Wild Card / Fuego Oscuro)
+                        card.style.background = "var(--kuni-dark)";
+                        card.style.borderColor = "var(--kuni-fire)";
+                        card.style.color = "var(--kuni-fire)";
+                        card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🔥</span>`; 
+                    }
+                }
+            });
+        }
+
+        // --- 4. LÓGICA DE EJERCICIOS (SEPARADA) ---
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 20 + (cycle * 2); 
+            
+            let title = "", description = "";
+
+            if (currentMode === 'calistenia') {
+                // --- MODO WILD CARD (CALISTENIA / RESISTENCIA) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "SUPERVIVENCIA BÁSICA";
+                        description = `<strong>Objetivo:</strong> No caer.<br><br>• Flexiones explosivas: 4 x ${reps}<br>• Sentadillas con salto: 4 x ${reps}<br>• Dominadas (Agarre ancho): 4 series al fallo<br>• Plancha (Soportar el dolor): 3 min`;
+                        break;
+                    case 2: 
+                        title = "HUIDA DEL INFIERNO (AGILIDAD)";
+                        description = `<strong>Objetivo:</strong> Velocidad de reacción.<br><br>• Sprints de ida y vuelta (Suicidios): 10 min<br>• Burpees con salto alto: ${reps} reps<br>• Zancadas pliométricas: 4 x 20<br>• Mountain Climbers: 4 x 50`;
+                        break;
+                    case 3: 
+                        title = "LUCHA POR LA COPIA";
+                        description = `<strong>Objetivo:</strong> Ambidiestrismo corporal.<br><br>• Pistol Squats (Asistidas si es necesario): 5 x 5 por pierna<br>• Flexiones a una mano (o Archer): 4 x 8 por lado<br>• L-Sit estático: 5 intentos<br>• Shadow Boxing (Lado débil): 15 min`;
+                        break;
+                    case 4: 
+                        title = "LA PUERTA FINAL (RESISTENCIA)";
+                        description = `<strong>Objetivo:</strong> Agotar al rival.<br><br>• Carrera larga (Ritmo Ego): 8-10 km<br>• Wall Sit (Sentadilla estática): 5 min acumulados<br>• Saltos de cajón continuos: 100 reps<br>• Abdominales en V: 4 x 25`;
+                        break;
+                    case 0: 
+                        title = "OSCURIDAD SOLITARIA";
+                        description = `<strong>Objetivo:</strong> Recuperar y odiar.<br><br>• Estiramientos completos<br>• Meditación oscura<br>• Comida estricta<br>• Dormir para reiniciar`;
+                        break;
+                }
+            } else {
+                // --- MODO CYBORG (GYM / HIPERTROFIA) ---
+                switch(dayType) {
+                    case 1: 
+                        title = "TORSO DE ACERO (PUSH)";
+                        description = `<strong>Objetivo:</strong> Construir la armadura.<br><br>• Press de Banca (Potencia): 5 x 5<br>• Press Militar: 4 x 8<br>• Fondos con lastre: 4 x 10<br>• Extensiones de Tríceps: 4 x 12<br><em>*¡Cuerpo perfecto como Noa!</em>`;
+                        break;
+                    case 2: 
+                        title = "TRACCIÓN DE MONSTRUO (PULL)";
+                        description = `<strong>Objetivo:</strong> Espalda en V.<br><br>• Peso Muerto: 5 x 5<br>• Dominadas lastradas: 4 x 8<br>• Remo con barra: 4 x 10<br>• Curl de Bíceps con barra: 4 x 10`;
+                        break;
+                    case 3: 
+                        title = "PIERNAS DE CAÑÓN (LEGS)";
+                        description = `<strong>Objetivo:</strong> Potencia de tiro.<br><br>• Sentadilla Profunda: 5 x 5<br>• Prensa de Piernas (Unilateral): 4 x 10 por pierna<br>• Peso Muerto Rumano: 4 x 10<br>• Extensiones de Cuádriceps: 4 x 15`;
+                        break;
+                    case 4: 
+                        title = "FÍSICO PERFECTO (ACCESORIOS)";
+                        description = `<strong>Objetivo:</strong> Completar el cyborg.<br><br>• Elevaciones laterales: 5 x 15<br>• Facepulls: 4 x 20<br>• Curl Martillo: 4 x 12<br>• Encogimientos y Antebrazo: 4 superseries`;
+                        break;
+                    case 0: 
+                        title = "MANTENIMIENTO";
+                        description = `<strong>Objetivo:</strong> Reparar tejidos.<br><br>• Masaje deportivo<br>• Crioterapia (Agua helada)<br>• Alta proteína<br>• Sueño profundo`;
+                        break;
+                }
+            }
+            return { title, description };
+        }
+
+        // --- 5. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 6. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            
+            // Personalizar botón
+            const btn = modal.querySelector('.btn-action');
+            if(currentMode === 'gym') {
+                btn.innerText = "EJECUTAR";
+                btn.style.color = "var(--kuni-dark)";
+                btn.style.background = "var(--kuni-orange)";
+                btn.style.borderColor = "var(--kuni-orange)";
+                btn.onmouseenter = () => { btn.style.boxShadow = "0 0 20px var(--kuni-orange)"; };
+            } else {
+                btn.innerText = "SOBREVIVIR";
+                btn.style.color = "var(--kuni-orange)";
+                btn.style.background = "transparent";
+                btn.style.borderColor = "var(--kuni-orange)";
+                btn.onmouseenter = () => { btn.style.background = "var(--kuni-dark)"; btn.style.color = "var(--kuni-fire)"; btn.style.borderColor = "var(--kuni-fire)"; };
+                btn.onmouseleave = () => { btn.style.background = "transparent"; btn.style.color = "var(--kuni-orange)"; btn.style.borderColor = "var(--kuni-orange)"; };
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 7. SISTEMA DE COMPLETADO Y PERSISTENCIA (LOCALSTORAGE) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            
+            if(progressData[currentMode].has(currentDayIndex)) return;
+
+            progressData[currentMode].add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            if (currentMode === 'gym') {
+                card.style.background = "var(--kuni-orange)";
+                card.style.borderColor = "var(--white)";
+                card.style.color = "var(--kuni-dark)";
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🦾</span>`; 
+            } else {
+                card.style.background = "var(--kuni-dark)";
+                card.style.borderColor = "var(--kuni-fire)";
+                card.style.color = "var(--kuni-fire)";
+                card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🔥</span>`; 
+            }
+            
+            createParticles(card);
+            updateProgress();
+            saveData(); // GUARDAR
+        }
+
+        function updateProgress() {
+            const percent = progressData[currentMode].size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+        function saveData() {
+            localStorage.setItem('kunigami_calistenia', JSON.stringify([...progressData.calistenia]));
+            localStorage.setItem('kunigami_gym', JSON.stringify([...progressData.gym]));
+        }
+
+        function loadData() {
+            // Cargar Calistenia
+            const savedCalistenia = localStorage.getItem('kunigami_calistenia');
+            if (savedCalistenia) {
+                progressData.calistenia = new Set(JSON.parse(savedCalistenia));
+            }
+
+            // Cargar Gym
+            const savedGym = localStorage.getItem('kunigami_gym');
+            if (savedGym) {
+                progressData.gym = new Set(JSON.parse(savedGym));
+            }
+
+            // Refrescar UI inicial
+            refreshGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            const modeName = currentMode === 'calistenia' ? "WILD CARD (Calistenia)" : "CYBORG (Gym)";
+            if(confirm(`¿Estás seguro de BORRAR todo el progreso del modo ${modeName}?`)) {
+                // Borrar solo del set actual
+                progressData[currentMode].clear();
+                
+                // Guardar el estado vacío
+                saveData();
+                
+                // Actualizar visualmente
+                refreshGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                
+                // Colores dinámicos
+                let colors;
+                if(currentMode === 'gym') {
+                    // Naranja, Blanco, Plata
+                    colors = ['#FF6D00', '#FFFFFF', '#B0BEC5'];
+                } else {
+                    // Negro, Rojo Fuego, Naranja oscuro
+                    colors = ['#121212', '#FF3D00', '#E65100'];
+                }
+
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '2px';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 700,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+        
+        // Inicializar al cargar
+        loadData();
+    </script>
+</body>
+</html>
