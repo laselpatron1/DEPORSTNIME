@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo High Projectile - Shutoku Ace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES MIDORIMA (SHUTOKU & GREEN) --- */
+        :root {
+            /* Colores: Verde Midorima, Naranja Shutoku y Negro */
+            --midorima-green: #2E7D32;   /* Verde Bosque (Pelo/Aura) */
+            --shutoku-orange: #FF6D00;   /* Naranja Vibrante (Uniforme) */
+            --shadow-black: #051005;     /* Fondo negro verdoso */
+            --dark-forest: #002200;      /* Verde muy oscuro */
+            --white: #ffffff;
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Degradado Bosque Profundo */
+            background: linear-gradient(135deg, var(--shadow-black) 0%, var(--dark-forest) 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Partículas Verdes y Naranjas) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(46, 125, 50, 0.2) 1px, transparent 1px),
+                radial-gradient(rgba(255, 109, 0, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.4;
+            animation: moveBackground 60s linear infinite;
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(255,255,255,0.1); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--midorima-green); width: 0%;
+            box-shadow: 0 0 15px var(--midorima-green), 0 0 5px var(--shutoku-orange);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* Asegúrate de tener la imagen en tu carpeta */
+            background-image: linear-gradient(to bottom, rgba(0, 20, 0, 0.7), rgba(0, 0, 0, 1)), url('imagenes/MIDORIMA.png'); 
+            background-size: cover;
+            background-position: center 20%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--midorima-green);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 5px;
+            color: var(--white);
+            text-shadow: 0 0 25px var(--midorima-green), 0 0 10px var(--shutoku-orange);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--shutoku-orange);
+            background: rgba(46, 125, 50, 0.3);
+            padding: 8px 30px;
+            border: 1px solid var(--midorima-green);
+            margin-top: 15px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(10, 30, 10, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--midorima-green);
+            padding: 40px;
+            border-radius: 6px; 
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            margin-bottom: 30px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--white);
+        }
+        .quote-text strong { 
+            color: var(--shutoku-orange); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(46, 125, 50, 0.3);
+            border-radius: 4px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(46, 125, 50, 0.2); /* Brillo verde */
+            border-color: var(--shutoku-orange);
+            box-shadow: 0 0 20px rgba(255, 109, 0, 0.4);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: var(--midorima-green); 
+            border-color: var(--shutoku-orange);
+            color: var(--white); 
+            transform: scale(0.95);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+        
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #0a200a, #000000);
+            border: 1px solid var(--midorima-green);
+            box-shadow: 0 0 60px rgba(46, 125, 50, 0.3);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 4px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--midorima-green); color: #fff; padding: 5px 15px; border-radius: 2px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; letter-spacing: 2px;}
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--shutoku-orange); text-transform: uppercase; }
+        .modal-desc { line-height: 1.8; color: #c8e6c9; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 1px solid var(--midorima-green); color: var(--midorima-green);
+            font-family: var(--font-title); font-size: 1.3rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--midorima-green); 
+            color: #fff; 
+            box-shadow: 0 0 30px var(--midorima-green), 0 0 10px var(--shutoku-orange); 
+        }
+
+        /* --- ESTADÍSTICAS Y RESET --- */
+        .stats-container {
+            text-align: center; margin-bottom: 40px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--midorima-green); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(46, 125, 50, 0.6);
+            margin-bottom: 15px;
+        }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 109, 0, 0.3); /* Naranja suave */
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--shutoku-orange);
+            border-color: var(--shutoku-orange);
+            box-shadow: 0 0 10px rgba(255, 109, 0, 0.2);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>El Francotirador Absoluto</h1>
+        <div class="subtitle">Shutoku Ace - High Projectile Three</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "El hombre propone, Dios dispone. Hago todo lo humanamente posible... <br>
+                <strong>y mis tiros nunca fallan. Nanodayo.</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                DISTANCIA DE TIRO: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Destino</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+        </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--midorima-green); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">Tiro Perfecto</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS MIDORIMA ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ADAPTADA A MIDORIMA (Forma, Rango, Resistencia, Suerte)
+            switch(dayType) {
+                case 1: 
+                    title = "FORMA PERFECTA";
+                    description = `<strong>Enfoque:</strong> Mecánica de tiro inalterable.<br><br>• 100 tiros formales (cuidando cada detalle)<br>• Sentadilla profunda (Base de poder): 4 x 15<br>• Flexiones de muñeca con mancuerna<br>• Vendaje de dedos (Preparación mental)`;
+                    break;
+                case 2: 
+                    title = "RESISTENCIA SHUTOKU";
+                    description = `<strong>Enfoque:</strong> Volver a defensa rápido.<br><br>• Sprints cancha completa (Ida y vuelta): 10 reps<br>• Entrenamiento de intervalos (HIIT): 20 min<br>• Plancha abdominal (Estabilidad de core)<br>• "No estorbes en mi camino"`;
+                    break;
+                case 3: 
+                    title = "RANGO EXTENDIDO";
+                    description = `<strong>Enfoque:</strong> Aumentar distancia gradualmente.<br><br>• Tiros desde media cancha: 30 encestes<br>• Lanzamiento de balón medicinal (Potencia)<br>• Press de hombros militar: 4 x 10<br>• Salto vertical máximo (Transferencia de fuerza)`;
+                    break;
+                case 4: 
+                    title = "HIGH PROJECTILE (ARCO)";
+                    description = `<strong>Enfoque:</strong> Tiempo de vuelo y Altura.<br><br>• Tiros con arco exagerado (Moonshots)<br>• Sentadilla con salto explosivo<br>• Dominadas estrictas<br>• Visualización: El balón no toca el aro`;
+                    break;
+                case 0: 
+                    title = "OHA ASA (SUERTE)";
+                    description = `<strong>Enfoque:</strong> Preparación y Destino.<br><br>• Buscar el "Item de la suerte" del día<br>• Cuidado de las uñas (Mantenimiento)<br>• Estiramiento metódico y perfecto<br>• Escuchar el horóscopo de Cáncer`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            // Animación de entrada
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `
+                <span class="day-number">${i}</span>
+            `;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN Y PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        
+        // Cargar datos al iniciar
+        loadData();
+
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            // Efectos visuales
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            markCardAsCompleted(card);
+            createParticles(card);
+            
+            updateProgress();
+
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        // Función auxiliar para marcar visualmente
+        function markCardAsCompleted(card) {
+            card.classList.add('completed');
+            card.innerHTML = `<span class="day-number" style="font-size:3rem">✓</span>`;
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+
+        function saveData() {
+            // Clave única para Midorima
+            const dataToSave = JSON.stringify([...completedDays]);
+            localStorage.setItem('midorimaProtocolData', dataToSave);
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('midorimaProtocolData');
+            if (savedData) {
+                const daysArray = JSON.parse(savedData);
+                daysArray.forEach(day => {
+                    completedDays.add(day);
+                    const card = document.getElementById(`day-${day}`);
+                    if(card) {
+                        markCardAsCompleted(card);
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro? Borrar tu progreso va contra el destino. Nanodayo.")) {
+                localStorage.removeItem('midorimaProtocolData');
+                location.reload(); 
+            }
+        }
+
+        // --- PARTÍCULAS ---
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                // Colores de partículas: Verde Midorima, Naranja Shutoku o Blanco
+                const rand = Math.random();
+                if (rand < 0.4) particle.style.background = '#2E7D32'; // Verde
+                else if (rand < 0.7) particle.style.background = '#FF6D00'; // Naranja
+                else particle.style.background = '#ffffff'; // Blanco
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+    </script>
+</body>
+</html>

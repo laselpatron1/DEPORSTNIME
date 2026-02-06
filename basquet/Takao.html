@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Hawk Eye - Shutoku PG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES TAKAO (SHUTOKU & HAWK EYE) --- */
+        :root {
+            /* Colores: Naranja Shutoku, Gris Plata (Visión) y Negro */
+            --takao-orange: #FF6D00;     /* Naranja intenso Shutoku */
+            --takao-vision: #B0BEC5;     /* Gris Plata/Azulado (Ojo de Halcón) */
+            --shadow-black: #101010;     /* Fondo negro sólido */
+            --shutoku-dark: #1a0f00;     /* Fondo oscuro naranja */
+            --rakuzan-white: #ffffff;
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Degradado Visión Nocturna */
+            background: linear-gradient(135deg, var(--shadow-black) 0%, var(--shutoku-dark) 100%);
+            color: var(--rakuzan-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Partículas Naranjas y Plata) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(255, 109, 0, 0.2) 1px, transparent 1px),
+                radial-gradient(rgba(176, 190, 197, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.4;
+            animation: moveBackground 60s linear infinite;
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(255,255,255,0.1); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--takao-orange); width: 0%;
+            box-shadow: 0 0 15px var(--takao-orange), 0 0 5px var(--takao-vision);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* Asegúrate de tener la imagen en tu carpeta */
+            background-image: linear-gradient(to bottom, rgba(20, 10, 0, 0.7), rgba(0, 0, 0, 1)), url('imagenes/TAKAO.png'); 
+            background-size: cover;
+            background-position: center 25%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--takao-orange);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 5px;
+            color: var(--rakuzan-white);
+            text-shadow: 0 0 25px var(--takao-orange), 0 0 10px var(--takao-vision);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--takao-orange);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 30px;
+            border: 1px solid var(--takao-orange);
+            margin-top: 15px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(30, 15, 5, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--takao-orange);
+            padding: 40px;
+            border-radius: 6px; 
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            margin-bottom: 30px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--rakuzan-white);
+        }
+        .quote-text strong { 
+            color: var(--takao-orange); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 109, 0, 0.3);
+            border-radius: 4px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 109, 0, 0.2); /* Brillo naranja */
+            border-color: var(--takao-vision);
+            box-shadow: 0 0 20px rgba(255, 109, 0, 0.4);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: var(--takao-orange); 
+            border-color: var(--takao-vision);
+            color: var(--rakuzan-white); 
+            transform: scale(0.95);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+        
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #261500, #000000);
+            border: 1px solid var(--takao-orange);
+            box-shadow: 0 0 60px rgba(255, 109, 0, 0.3);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 4px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--takao-orange); color: #fff; padding: 5px 15px; border-radius: 2px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; letter-spacing: 2px;}
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--takao-vision); text-transform: uppercase; }
+        .modal-desc { line-height: 1.8; color: #cfd8dc; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 1px solid var(--takao-orange); color: var(--takao-orange);
+            font-family: var(--font-title); font-size: 1.3rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--takao-orange); 
+            color: #fff; 
+            box-shadow: 0 0 30px var(--takao-orange), 0 0 10px var(--takao-vision); 
+        }
+
+        /* --- ESTADÍSTICAS Y RESET --- */
+        .stats-container {
+            text-align: center; margin-bottom: 40px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--takao-orange); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 109, 0, 0.6);
+            margin-bottom: 15px;
+        }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 109, 0, 0.3); /* Naranja suave */
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--takao-orange);
+            border-color: var(--takao-orange);
+            box-shadow: 0 0 10px rgba(255, 109, 0, 0.2);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>Ojo de Halcón</h1>
+        <div class="subtitle">Shutoku PG - Visión Total</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "¡Puedo ver toda la cancha! Shin-chan, confía en mí... <br>
+                <strong>¡El balón llegará exactamente a tu mano!</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                CAMPO DE VISIÓN: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Visión</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+        </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--takao-orange); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">Escanear Cancha</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS TAKAO ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ADAPTADA A TAKAO (Hawk Eye, Pases, Dribbling)
+            switch(dayType) {
+                case 1: 
+                    title = "HAWK EYE (VISIÓN)";
+                    description = `<strong>Enfoque:</strong> Conciencia espacial total.<br><br>• Dribbling mirando al frente (Sin ver el balón): 10 min<br>• Ejercicios de visión periférica con luces o compañeros<br>• Pases ciegos (No-look pass) a objetivos<br>• Análisis de juego en tiempo real (Mapa mental)`;
+                    break;
+                case 2: 
+                    title = "PASE AL AS (SHIN-CHAN)";
+                    description = `<strong>Enfoque:</strong> Precisión para el tirador.<br><br>• Pases de pecho rápidos y largos: 50 reps<br>• Pase de béisbol (Contraataque): 4 x 10<br>• Coordinación con tirador (Pick & Pop)<br>• Fortalecimiento de muñecas y antebrazos`;
+                    break;
+                case 3: 
+                    title = "VELOCIDAD DE BASE";
+                    description = `<strong>Enfoque:</strong> Ritmo y Penetración.<br><br>• Sprints con cambio de dirección (Zig-Zag): 10 reps<br>• Dribbling bajo y rápido entre conos<br>• Bandejas a velocidad máxima<br>• Juego de pies defensivo (Robo de balón)`;
+                    break;
+                case 4: 
+                    title = "RESISTENCIA SHUTOKU";
+                    description = `<strong>Enfoque:</strong> No rendirse ante rivales fuertes.<br><br>• Carrera de fondo (Ritmo constante): 8 km<br>• Burpees: 4 x 20<br>• Plancha lateral y frontal (Core estable)<br>• Suicidios (Sprints) al final del entreno`;
+                    break;
+                case 0: 
+                    title = "RISAS Y RECUPERACIÓN";
+                    description = `<strong>Enfoque:</strong> Mentalidad relajada y descanso.<br><br>• Paseo en bicicleta (Con carro trasero opcional)<br>• Estiramiento de cuello y espalda (Por mirar tanto)<br>• Bromear con el equipo (Moral)<br>• Hidratación y sueño`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            // Animación de entrada
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `
+                <span class="day-number">${i}</span>
+            `;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN Y PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        
+        // Cargar datos al iniciar
+        loadData();
+
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            // Efectos visuales
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            markCardAsCompleted(card);
+            createParticles(card);
+            
+            updateProgress();
+
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        // Función auxiliar para marcar visualmente
+        function markCardAsCompleted(card) {
+            card.classList.add('completed');
+            card.innerHTML = `<span class="day-number" style="font-size:3rem">✓</span>`;
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+
+        function saveData() {
+            // Clave única para Takao
+            const dataToSave = JSON.stringify([...completedDays]);
+            localStorage.setItem('takaoProtocolData', dataToSave);
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('takaoProtocolData');
+            if (savedData) {
+                const daysArray = JSON.parse(savedData);
+                daysArray.forEach(day => {
+                    completedDays.add(day);
+                    const card = document.getElementById(`day-${day}`);
+                    if(card) {
+                        markCardAsCompleted(card);
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        function resetData() {
+            if(confirm("¿Seguro que quieres reiniciar? Shin-chan se va a enfadar si pierdes el ritmo...")) {
+                localStorage.removeItem('takaoProtocolData');
+                location.reload(); 
+            }
+        }
+
+        // --- PARTÍCULAS ---
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                // Colores de partículas: Naranja Takao, Plata Vision o Blanco
+                const rand = Math.random();
+                if (rand < 0.5) particle.style.background = '#FF6D00'; // Naranja
+                else if (rand < 0.8) particle.style.background = '#B0BEC5'; // Plata
+                else particle.style.background = '#ffffff'; // Blanco
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+    </script>
+</body>
+</html>

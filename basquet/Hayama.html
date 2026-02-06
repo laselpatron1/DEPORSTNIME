@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Raiju - Rakuzan SF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES HAYAMA (LIGHTNING & RAKUZAN) --- */
+        :root {
+            /* Colores: Amarillo Eléctrico (Raiju), Blanco Rakuzan y Negro Velocidad */
+            --hayama-volt: #FFEA00;      /* Amarillo Neón/Eléctrico */
+            --hayama-spark: #FFFF8D;     /* Amarillo pálido para brillos */
+            --shadow-black: #1a1a00;     /* Fondo negro con tinte amarillento */
+            --speed-dark: #000000;       /* Negro puro para contraste */
+            --rakuzan-white: #ffffff;
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Degradado Tormenta Eléctrica Oscura */
+            background: linear-gradient(135deg, var(--speed-dark) 0%, #1a1500 100%);
+            color: var(--rakuzan-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Partículas Eléctricas) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(255, 234, 0, 0.2) 1px, transparent 1px),
+                radial-gradient(rgba(255, 255, 141, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.4;
+            animation: moveBackground 60s linear infinite;
+        }
+        @keyframes moveBackground { from { transform: translateY(0); } to { transform: translateY(-500px); } }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(255,255,255,0.1); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--hayama-volt); width: 0%;
+            box-shadow: 0 0 15px var(--hayama-volt), 0 0 5px var(--rakuzan-white);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* Asegúrate de tener la imagen en tu carpeta */
+            background-image: linear-gradient(to bottom, rgba(20, 20, 0, 0.7), rgba(0, 0, 0, 1)), url('imagenes/HAYAMA.png'); 
+            background-size: cover;
+            background-position: center 25%;
+            background-attachment: fixed;
+            z-index: 1;
+            border-bottom: 4px solid var(--hayama-volt);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 5px;
+            color: var(--rakuzan-white);
+            text-shadow: 0 0 25px var(--hayama-volt), 0 0 10px var(--hayama-spark);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--hayama-volt);
+            background: rgba(20, 20, 0, 0.6);
+            padding: 8px 30px;
+            border: 1px solid var(--hayama-volt);
+            margin-top: 15px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TARJETA DE CITA --- */
+        .quote-card {
+            background: rgba(20, 20, 0, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--hayama-volt);
+            padding: 40px;
+            border-radius: 6px; 
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            margin-bottom: 30px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--rakuzan-white);
+        }
+        .quote-text strong { 
+            color: var(--hayama-volt); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 234, 0, 0.3);
+            border-radius: 4px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 234, 0, 0.2); /* Brillo eléctrico */
+            border-color: var(--hayama-volt);
+            box-shadow: 0 0 20px rgba(255, 234, 0, 0.4);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: var(--hayama-volt); 
+            border-color: var(--rakuzan-white);
+            color: var(--speed-dark); 
+            transform: scale(0.95);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            z-index: 2; 
+        }
+        
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a00, #000000);
+            border: 1px solid var(--hayama-volt);
+            box-shadow: 0 0 60px rgba(255, 234, 0, 0.2);
+            width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 4px;
+            position: relative; text-align: left;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-day { background: var(--hayama-volt); color: #000; padding: 5px 15px; border-radius: 2px; font-weight: bold; font-family: var(--font-title); font-size: 1.2rem; letter-spacing: 2px;}
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; margin: 10px 0; color: var(--hayama-spark); text-transform: uppercase; }
+        .modal-desc { line-height: 1.8; color: #ffffd1; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 1px solid var(--hayama-volt); color: var(--hayama-volt);
+            font-family: var(--font-title); font-size: 1.3rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--hayama-volt); 
+            color: #000; 
+            box-shadow: 0 0 30px var(--hayama-volt), 0 0 10px var(--rakuzan-white); 
+        }
+
+        /* --- ESTADÍSTICAS Y RESET --- */
+        .stats-container {
+            text-align: center; margin-bottom: 40px;
+        }
+        .stats {
+            font-family: var(--font-title); color: var(--hayama-volt); 
+            letter-spacing: 3px; font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 234, 0, 0.6);
+            margin-bottom: 15px;
+        }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 234, 0, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            color: var(--hayama-volt);
+            border-color: var(--hayama-volt);
+            box-shadow: 0 0 10px rgba(255, 234, 0, 0.2);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>El Raiju de Rakuzan</h1>
+        <div class="subtitle">Regate Relámpago - Velocidad Pura</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "¡Oye, oye! ¿Crees que puedes seguirme? <br>
+                <strong>¡Te aplastaré antes de que te des cuenta!</strong>"
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                VELOCIDAD DE REGATE: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Apagar el Rayo</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper">
+        </div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--hayama-volt); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">Explotar Velocidad</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS HAYAMA ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            switch(dayType) {
+                case 1: 
+                    title = "LIGHTNING DRIBBLE (3 DEDOS)";
+                    description = `<strong>Enfoque:</strong> Fuerza de dedos y Control.<br><br>• Flexiones de dedos (Finger-tip pushups): 3 x al fallo<br>• Bote potente estático (Golpear el suelo fuerte): 5 min<br>• Dribbling de velocidad pura (Cancha completa)<br>• Ejercicios de agarre (Hand Grip)`;
+                    break;
+                case 2: 
+                    title = "INSTINTO SALVAJE";
+                    description = `<strong>Enfoque:</strong> Reflejos y Agilidad.<br><br>• Escalera de agilidad (Drills rápidos): 10 min<br>• Salto de caja reactivo (Plyometrics)<br>• 1vs1 Simulado (Fintas de cuerpo explosivas)<br>• Sprints con cambio de dirección (Shuttle run)`;
+                    break;
+                case 3: 
+                    title = "NIVEL 4 DEDOS (VELOCIDAD)";
+                    description = `<strong>Enfoque:</strong> Desaparición del balón.<br><br>• Crossover relámpago: 4 x 20 reps<br>• Dribbling con dos balones (Coordinación)<br>• Sentadilla con salto (Potencia de arranque)<br>• Meditación activa: "Ser como el trueno"`;
+                    break;
+                case 4: 
+                    title = "NIVEL 5 DEDOS (TRUENO)";
+                    description = `<strong>Enfoque:</strong> Potencia Máxima y Ruido.<br><br>• Slam Dribble (Máxima fuerza contra el suelo)<br>• Double Clutch Layups (Finalización acrobática)<br>• HIIT Explosivo: 15 seg trabajo / 15 descanso<br>• Plancha dinámica (Core para cambios bruscos)`;
+                    break;
+                case 0: 
+                    title = "RECUPERACIÓN BESTIAL";
+                    description = `<strong>Enfoque:</strong> Movilidad y Diversión.<br><br>• Skateboarding o actividad libre (Equilibrio)<br>• Estiramiento de antebrazos y muñecas<br>• Baño de hielo para piernas<br>• Descanso mental (Juegos/Diversión)`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        for (let i = 1; i <= 100; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day-card');
+            dayDiv.id = `day-${i}`;
+            
+            // Animación de entrada
+            dayDiv.style.animation = `fadeInUp 0.5s ease backwards ${i * 0.02}s`;
+
+            dayDiv.innerHTML = `
+                <span class="day-number">${i}</span>
+            `;
+
+            dayDiv.addEventListener('click', function() {
+                currentDayIndex = i;
+                const workout = getWorkout(i);
+                openModal(i, workout.title, workout.description);
+            });
+
+            calendarContainer.appendChild(dayDiv);
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN Y PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        
+        // Cargar datos al iniciar
+        loadData();
+
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            // Efectos visuales
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            markCardAsCompleted(card);
+            createParticles(card);
+            
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        // Función auxiliar para marcar visualmente
+        function markCardAsCompleted(card) {
+            card.classList.add('completed');
+            card.innerHTML = `<span class="day-number" style="font-size:3rem">✓</span>`;
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- FUNCIONES DE GUARDADO ---
+
+        function saveData() {
+            // Clave única para Hayama
+            const dataToSave = JSON.stringify([...completedDays]);
+            localStorage.setItem('hayamaProtocolData', dataToSave);
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('hayamaProtocolData');
+            if (savedData) {
+                const daysArray = JSON.parse(savedData);
+                daysArray.forEach(day => {
+                    completedDays.add(day);
+                    const card = document.getElementById(`day-${day}`);
+                    if(card) {
+                        markCardAsCompleted(card);
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        function resetData() {
+            if(confirm("¿Seguro que quieres perder tu velocidad? Tendrás que empezar de cero.")) {
+                localStorage.removeItem('hayamaProtocolData');
+                location.reload(); 
+            }
+        }
+
+        // --- PARTÍCULAS ---
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                // Colores de partículas: Amarillo Volt, Blanco
+                const rand = Math.random();
+                if (rand < 0.6) particle.style.background = '#FFEA00'; // Amarillo
+                else particle.style.background = '#ffffff'; // Blanco
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+    </script>
+</body>
+</html>
