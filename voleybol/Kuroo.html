@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Kuroo - El Capitán Intrigante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES NEKOMA (KUROO) --- */
+        :root {
+            /* Colores Oficiales Nekoma */
+            --nekoma-red: #D50000;       /* Rojo Sangre Intenso */
+            --nekoma-bright: #FF1744;    /* Rojo Brillante */
+            --nekoma-dark: #212121;      /* Negro Carbón */
+            --nekoma-deep: #000000;      /* Negro Absoluto */
+            --white: #ffffff;
+            
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Oscuridad táctica con rojo Nekoma */
+            background: linear-gradient(135deg, var(--nekoma-deep) 0%, #3e0000 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Química/Estrategia) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(213, 0, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 23, 68, 0.05) 0%, transparent 50%);
+            animation: schemePulse 8s infinite alternate;
+        }
+
+        @keyframes schemePulse { 0% { opacity: 0.6; } 100% { opacity: 0.9; } }
+
+        /* --- BARRA DE PROGRESO (READ BLOCK) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+            border-bottom: 1px solid var(--nekoma-red);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--nekoma-red), var(--nekoma-bright)); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--nekoma-red);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), var(--nekoma-deep)), url('imagenes/KUROO.png'); 
+            background-size: cover;
+            background-position: center 25%;
+            z-index: 1;
+            border-bottom: 3px solid var(--nekoma-red);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+            color: var(--nekoma-red);
+            text-shadow: 3px 3px 0px #000;
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--white);
+            background: rgba(213, 0, 0, 0.8);
+            padding: 8px 30px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            border: 1px solid var(--white);
+            transform: skew(-5deg);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 20, 20, 0.95);
+            border-right: 5px solid var(--nekoma-red);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #d1d1d1;
+            line-height: 1.6;
+        }
+        .quote-text strong { 
+            color: var(--nekoma-red); 
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--nekoma-dark);
+            height: 95px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--nekoma-red);
+            background: rgba(213, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(213, 0, 0, 0.3);
+        }
+
+        .day-card.completed {
+            background: var(--nekoma-red);
+            border-color: var(--white);
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.8rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #0a0a0a;
+            border: 2px solid var(--nekoma-red);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(213, 0, 0, 0.2);
+        }
+
+        .modal-header { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .modal-day { font-family: var(--font-title); color: var(--nekoma-bright); font-size: 1.2rem; letter-spacing: 2px; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--white); margin: 10px 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.7; color: #ccc; font-size: 1.1rem; margin-top: 20px; text-align: left; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 35px;
+            background: var(--nekoma-red); border: none; color: var(--white);
+            font-family: var(--font-title); font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+            font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--white); 
+            color: var(--nekoma-red);
+            box-shadow: 0 0 20px var(--nekoma-red);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--nekoma-red); 
+            font-size: 1.3rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--nekoma-bright);
+            color: #ccc;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 25px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--nekoma-red);
+            color: var(--nekoma-red);
+            background: rgba(213, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>READ BLOCKING</h1>
+        <div class="subtitle">Kuroo Tetsuro Defensive Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Nosotros somos la sangre. Debemos fluir sin detenernos... <br>
+                <strong>Para que el cerebro siga funcionando."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                KILL BLOCK: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR ESTRATEGIA</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--nekoma-red); cursor: pointer; float: right; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">ONE TOUCH</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (KUROO STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: BLOQUEO DE LECTURA (Inteligencia, Recepción, Ataque Rápido)
+            switch(dayType) {
+                case 1: 
+                    title = "LECTURA DE BLOQUEO";
+                    description = `<strong>Objetivo:</strong> Matar el remate en el último segundo.<br><br>• Salto de bloqueo vertical (Máxima altura): 4 x 12<br>• Desplazamiento lateral en la red (Footwork)<br>• Reacción visual (Esperar hasta ver el balón)<br>• "One Touch" (Toque suave para contraataque)`;
+                    break;
+                case 2: 
+                    title = "DEFENSA DE PISO (RECEPCIÓN)";
+                    description = `<strong>Objetivo:</strong> Conectar con el cerebro.<br><br>• Recepción de remates (Digs): 30 reps<br>• Plancha abdominal (Core para recibir)<br>• Rodada de judo (Recuperación rápida del suelo)<br>• Posicionamiento defensivo (Lectura)`;
+                    break;
+                case 3: 
+                    title = "ATAQUE DIFERENCIAL";
+                    description = `<strong>Objetivo:</strong> Engañar al bloqueador.<br><br>• Remate con retardo (Personal Time Difference)<br>• Salto con carrera curva (Broad Jump)<br>• Muñecazo rápido (Snap de muñeca)<br>• Finta de remate`;
+                    break;
+                case 4: 
+                    title = "QUÍMICA DE EQUIPO (SOLO)";
+                    description = `<strong>Objetivo:</strong> Liderazgo y consistencia.<br><br>• Saque flotante seguro: 20 seguidos sin fallar<br>• Colocación de emergencia (Antebrazos)<br>• Resistencia cardiovascular (Trote ritmo medio)<br>• Análisis de video (Estudiar rivales)`;
+                    break;
+                case 0: 
+                    title = "ESTRATEGA EN REPOSO";
+                    description = `<strong>Objetivo:</strong> Recuperación inteligente.<br><br>• Estiramiento completo (Flexibilidad felina)<br>• Baño caliente<br>• Comer pescado (Omega 3)<br>• Provocar mentalmente a alguien (Opcional)`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación sutil
+                dayDiv.style.animation = `schemePulse 4s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${i * 0.03}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🧪</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Rojas/Blancas) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: QUÍMICA/GATO
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🧪</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('kuroo_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('kuroo_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de borrar tu esquema de juego? Se perderá el progreso.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                // Colores: Rojo Nekoma o Blanco
+                particle.style.background = Math.random() > 0.5 ? '#D50000' : '#ffffff';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

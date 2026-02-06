@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Tendo - Guess Monster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES TENDO (GUESS MONSTER) --- */
+        :root {
+            /* Colores: Rojo Intenso (Pelo/Instinto) + Púrpura Shiratorizawa */
+            --tendo-red: #D50000;        /* Rojo Sangre */
+            --tendo-purple: #7B1FA2;     /* Púrpura Shiratorizawa */
+            --tendo-neon: #FF1744;       /* Rojo Neón Brillante */
+            --tendo-deep: #1a0000;       /* Fondo oscuro rojizo */
+            --white: #ffffff;
+            
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-creep: 'Creepster', cursive; /* Fuente de Monstruo */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Oscuridad con niebla roja */
+            background: radial-gradient(circle at center, #2b0000 0%, var(--tendo-deep) 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Latido/Instinto) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(213, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(123, 31, 162, 0.1) 0%, transparent 50%);
+            animation: creepPulse 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes creepPulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 0.8; } }
+
+        /* --- BARRA DE PROGRESO (GUESS GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 8px;
+            background: #000; z-index: 1000;
+            border-bottom: 2px solid var(--tendo-red);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--tendo-purple), var(--tendo-neon)); 
+            width: 0%;
+            box-shadow: 0 0 20px var(--tendo-neon);
+            transition: width 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), var(--tendo-deep)), url('imagenes/TENDO.png'); 
+            background-size: cover;
+            background-position: center 20%;
+            z-index: 1;
+            border-bottom: 4px solid var(--tendo-purple);
+        }
+
+        h1 {
+            font-family: var(--font-creep);
+            font-size: 5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 3px;
+            color: var(--tendo-neon);
+            text-shadow: 4px 4px 0px #000;
+            transform: rotate(-3deg);
+            animation: shake 0.5s infinite alternate paused;
+        }
+        
+        header:hover h1 { animation-play-state: running; }
+
+        @keyframes shake { 0% { transform: rotate(-3deg) translate(0,0); } 100% { transform: rotate(-3deg) translate(2px, 2px); } }
+
+        .subtitle {
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            color: var(--white);
+            background: var(--tendo-purple);
+            padding: 5px 30px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(123, 31, 162, 0.5);
+            transform: skew(-10deg);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 0, 0, 0.9);
+            border: 2px dashed var(--tendo-neon);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(213, 0, 0, 0.3);
+            transform: rotate(1deg);
+        }
+
+        .quote-text {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #ffcdd2;
+            line-height: 1.5;
+        }
+        .quote-text strong { 
+            color: var(--tendo-neon); 
+            font-family: var(--font-creep);
+            font-size: 2rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .day-card {
+            background: rgba(123, 31, 162, 0.1);
+            border: 1px solid #4a0072;
+            height: 95px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border-radius: 8px 0 8px 0; /* Forma irregular */
+        }
+
+        .day-card:hover {
+            border-color: var(--tendo-neon);
+            background: rgba(255, 23, 68, 0.2);
+            transform: scale(1.1) rotate(-3deg);
+            box-shadow: 0 0 20px var(--tendo-red);
+            z-index: 10;
+        }
+
+        .day-card.completed {
+            background: var(--tendo-red);
+            color: var(--white);
+            border-color: var(--tendo-neon);
+            font-family: var(--font-creep);
+            font-size: 1.5rem;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 0, 0, 0.96); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #150000;
+            border: 3px solid var(--tendo-purple);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 60px rgba(213, 0, 0, 0.4);
+            transform: rotate(-2deg);
+        }
+
+        .modal-header { margin-bottom: 25px; border-bottom: 2px dashed #550000; padding-bottom: 15px; }
+        .modal-day { font-family: var(--font-creep); color: var(--tendo-neon); font-size: 1.8rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.5rem; color: var(--white); margin: 10px 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.7; color: #ffcdd2; font-size: 1.1rem; margin-top: 20px; text-align: left; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 35px;
+            background: var(--tendo-purple); border: none; color: var(--white);
+            font-family: var(--font-creep); font-size: 1.8rem; cursor: pointer;
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 5px 5px 0 #000;
+        }
+        .btn-action:hover { 
+            background: var(--tendo-red); 
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 #000;
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-creep); color: var(--tendo-neon); 
+            font-size: 1.8rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 2px solid var(--tendo-purple);
+            color: var(--tendo-purple);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            padding: 10px 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            background: var(--tendo-purple);
+            color: var(--white);
+            box-shadow: 0 0 15px var(--tendo-purple);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>GUESS MONSTER</h1>
+        <div class="subtitle">Satori Tendo Intuition Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Romperé tu espíritu... ¿Adivina qué? <br>
+                <strong>¡Si crees que lo sabes, ya has perdido! ¡BLOQUEO!"</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                DESESPERACIÓN: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR INSTINTO</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--white); cursor: pointer; float: right; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">ADIVINAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (TENDO STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: GUESS BLOCK (Instinto, Flexibilidad, Salto)
+            switch(dayType) {
+                case 1: 
+                    title = "GUESS BLOCK (INSTINTO)";
+                    description = `<strong>Objetivo:</strong> Saltar donde "sientes" el balón.<br><br>• Salto de bloqueo reaccionando al último segundo<br>• Juego de manos rápido en la red (Quick hands)<br>• Lectura de ojos del colocador<br>• Salto lateral explosivo (Adivinando dirección)`;
+                    break;
+                case 2: 
+                    title = "FLEXIBILIDAD MONSTRUOSA";
+                    description = `<strong>Objetivo:</strong> Moverse como si no tuvieras huesos.<br><br>• Estiramiento dinámico de hombros y espalda<br>• Movilidad de cadera profunda<br>• Alcanzar balones lejos del cuerpo en el aire<br>• Yoga avanzado (Posturas extrañas)`;
+                    break;
+                case 3: 
+                    title = "TIME DIFFERENCE (ATAQUE)";
+                    description = `<strong>Objetivo:</strong> Molestar en ataque también.<br><br>• Remate con retardo (Engañar al bloqueo)<br>• Finta de remate y toque suave<br>• Carrera amplia (Broad jump) para confundir<br>• Muñecazo rápido hacia los lados`;
+                    break;
+                case 4: 
+                    title = "TERROR PSICOLÓGICO";
+                    description = `<strong>Objetivo:</strong> Romper la mente del rival.<br><br>• Bloqueo estático (Kill block) intimidante<br>• Gritos/Celebración tras bloqueo (Energía)<br>• Análisis de patrones del rival (Deducción)<br>• Salto vertical máximo (Tocar techo)`;
+                    break;
+                case 0: 
+                    title = "MANGA & CHOCO";
+                    description = `<strong>Objetivo:</strong> Relajarse a tu manera.<br><br>• Leer Shonen Jump (Inspiración)<br>• Comer helado de chocolate<br>• Dormir en posturas raras<br>• Estiramiento ligero`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación espeluznante
+                dayDiv.style.animation = `creepPulse 3s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${i * 0.05}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">👻</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Rojas/Púrpuras) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: FANTASMA (Guess Monster)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">👻</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('tendo_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('tendo_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Quieres borrar tu intuición? Empezarás de cero.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '10px';
+                particle.style.height = '10px';
+                // Colores: Rojo Tendo o Púrpura Shiratorizawa
+                particle.style.background = Math.random() > 0.5 ? '#D50000' : '#7B1FA2';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

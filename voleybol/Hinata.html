@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Hinata - Karasuno High</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES KARASUNO (HINATA) --- */
+        :root {
+            /* Colores Oficiales Karasuno */
+            --karasuno-orange: #FF6600;  /* Naranja vibrante */
+            --karasuno-bright: #FF9933;  /* Naranja claro para brillos */
+            --karasuno-black: #0d0d0d;   /* Negro casi puro */
+            --karasuno-grey: #1f1f1f;    /* Gris oscuro para fondos */
+            --white: #ffffff;
+            
+            --glass-bg: rgba(255, 102, 0, 0.05);
+            --glass-border: rgba(255, 102, 0, 0.3);
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--karasuno-black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Patrón de plumas de cuervo sutil */
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(20, 20, 20, 0.8) 0%, transparent 20%),
+                radial-gradient(circle at 90% 90%, rgba(30, 30, 30, 0.8) 0%, transparent 20%);
+        }
+
+        /* --- FONDO ANIMADO (Plumas Naranjas/Negras) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 102, 0, 0.05) 0%, transparent 60%);
+            animation: breathe 4s infinite ease-in-out;
+        }
+
+        @keyframes breathe { 0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 0.5; } }
+
+        /* --- BARRA DE PROGRESO (JUMP GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 8px;
+            background: #000; z-index: 1000;
+            border-bottom: 2px solid var(--karasuno-orange);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--karasuno-orange), var(--karasuno-bright)); 
+            width: 0%;
+            box-shadow: 0 0 20px var(--karasuno-orange);
+            transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Rebote al cargar */
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), var(--karasuno-black)), url('imagenes/HINATA.png'); 
+            background-size: cover;
+            background-position: center 20%;
+            z-index: 1;
+            border-bottom: 4px solid var(--karasuno-orange);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--karasuno-orange);
+            letter-spacing: 2px;
+            text-shadow: 4px 4px 0px #000;
+            transform: skew(-5deg);
+            animation: jumpText 2s infinite;
+        }
+
+        @keyframes jumpText { 0%, 100% { transform: translateY(0) skew(-5deg); } 50% { transform: translateY(-10px) skew(-5deg); } }
+
+        .subtitle {
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            color: var(--karasuno-black);
+            background: var(--white);
+            padding: 5px 30px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 800;
+            box-shadow: 5px 5px 0 var(--karasuno-orange);
+            transform: skew(-5deg);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid var(--karasuno-orange);
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 10px;
+        }
+
+        .quote-text {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #ddd;
+            line-height: 1.5;
+        }
+        .quote-text strong { 
+            color: var(--karasuno-orange); 
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            display: block;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .day-card {
+            background: var(--karasuno-grey);
+            border: 1px solid #333;
+            height: 95px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .day-card:hover {
+            border-color: var(--karasuno-orange);
+            background: #252525;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .day-card.completed {
+            background: var(--karasuno-orange);
+            color: var(--karasuno-black);
+            border-color: var(--white);
+            font-weight: bold;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #111;
+            border: 4px solid var(--karasuno-orange);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 60px rgba(255, 102, 0, 0.4);
+            border-radius: 5px;
+        }
+
+        .modal-header { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .modal-day { font-family: var(--font-title); color: #fff; font-size: 1.5rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.5rem; color: var(--karasuno-orange); margin: 10px 0; text-transform: uppercase; line-height: 1; }
+        .modal-desc { line-height: 1.6; color: #ccc; font-size: 1.1rem; margin-top: 20px; text-align: left; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 35px;
+            background: var(--karasuno-orange); border: none; color: var(--karasuno-black);
+            font-family: var(--font-title); font-size: 1.5rem; cursor: pointer;
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 2px;
+            font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--white); 
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--karasuno-orange);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--karasuno-orange); 
+            font-size: 1.6rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 2px solid var(--white);
+            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            padding: 10px 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            background: var(--white);
+            color: var(--karasuno-black);
+            box-shadow: 0 0 15px var(--white);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>LITTLE GIANT</h1>
+        <div class="subtitle">Hinata Shoyo Jump Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Puede que sea pequeño, pero... <br>
+                <strong>¡Puedo saltar! ¡Volaré sobre cualquier muro!"</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                ALTURA DE SALTO: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR VUELO</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--white); cursor: pointer; float: right; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">¡VOLAR!</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (HINATA STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 20 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: EL PEQUEÑO GIGANTE (Salto, Velocidad, Resistencia)
+            switch(dayType) {
+                case 1: 
+                    title = "POTENCIA DE SALTO";
+                    description = `<strong>Objetivo:</strong> Tocar el techo.<br><br>• Sentadillas con salto explosivo: 4 x 15<br>• Box Jumps (Cajón alto): 5 x 8<br>• Zancadas con salto (Plyo Lunges): 3 x 20<br>• Elevación de gemelos rápida: 4 x 25`;
+                    break;
+                case 2: 
+                    title = "VELOCIDAD DE SEÑUELO";
+                    description = `<strong>Objetivo:</strong> Moverse de punta a punta.<br><br>• Suicidios (Sprints laterales): 10 min<br>• Dash de 10m con cambio de dirección: 10 reps<br>• Agilidad en escalera (Pies rápidos)<br>• Skipping alto intenso: 5 x 30 seg`;
+                    break;
+                case 3: 
+                    title = "RESISTENCIA KARASUNO";
+                    description = `<strong>Objetivo:</strong> No parar de correr.<br><br>• Carrera de montaña (o inclinación): 5 km<br>• Burpees (Pecho al suelo): ${reps} reps<br>• Mountain Climbers: 4 x 1 min<br>• Saltar la cuerda (Ritmo doble): 10 min`;
+                    break;
+                case 4: 
+                    title = "VUELO Y EQUILIBRIO";
+                    description = `<strong>Objetivo:</strong> Control en el aire.<br><br>• Plancha abdominal (Core para volar): 3 min<br>• Saltos llevando rodillas al pecho (Tuck Jumps)<br>• Aterrizaje suave (Técnica de caída)<br>• Superman (Lumbares para arqueo)`;
+                    break;
+                case 0: 
+                    title = "RECUPERACIÓN ACTIVA";
+                    description = `<strong>Objetivo:</strong> Cuidar las alas.<br><br>• Estiramiento profundo de piernas<br>• Rodillo de espuma en cuádriceps<br>• Comer Tamago Kake Gohan (Proteína)<br>• Visualización de jugadas`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación de respiración/latido
+                dayDiv.style.animation = `breathe 3s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${i * 0.05}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🏐</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Naranjas) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: BALÓN DE VOLEY
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🏐</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('hinata_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('hinata_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Quieres volver a empezar desde cero? ¡Aún puedes volar más alto!")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                // Plumas/Partículas con más energía
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 10 + 4 + 'px';
+                particle.style.height = particle.style.width;
+                // Colores: Naranja Karasuno, Blanco, Negro
+                const colors = ['#FF6600', '#FFFFFF', '#000000'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 80; // Explosión más fuerte
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 900,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

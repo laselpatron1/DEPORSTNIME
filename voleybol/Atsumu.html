@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Atsumu - El Portador Dual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES ATSUMU (INARIZAKI / FOX) --- */
+        :root {
+            /* Colores Oficiales Inarizaki */
+            --inari-maroon: #800000;     /* Granate Intenso */
+            --inari-gold: #FFD700;       /* Dorado (Pelo/Talento) */
+            --inari-dark: #1a1a1a;       /* Negro Carbón */
+            --inari-deep: #050000;       /* Fondo profundo */
+            --white: #ffffff;
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            /* FONDO: Degradado Oscuro con toque Granate */
+            background: linear-gradient(135deg, var(--inari-deep) 0%, #2b0000 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Aura de Zorro) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(128, 0, 0, 0.1) 0%, transparent 40%);
+            animation: foxPulse 6s infinite alternate;
+        }
+
+        @keyframes foxPulse { 0% { opacity: 0.5; } 100% { opacity: 0.8; } }
+
+        /* --- BARRA DE PROGRESO (SERVICE ACE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            border-bottom: 1px solid var(--inari-maroon);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--inari-maroon), var(--inari-gold)); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--inari-gold);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), var(--inari-deep)), url('imagenes/ATSUMU.png'); 
+            background-size: cover;
+            background-position: center 20%;
+            z-index: 1;
+            border-bottom: 3px solid var(--inari-gold);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+            color: var(--inari-gold);
+            text-shadow: 3px 3px 0px var(--inari-maroon);
+            transform: skew(-5deg);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--white);
+            background: var(--inari-maroon);
+            padding: 8px 30px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            border: 1px solid var(--inari-gold);
+            transform: skew(-5deg);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(26, 26, 26, 0.9);
+            border-left: 5px solid var(--inari-gold);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .quote-text strong { 
+            color: var(--inari-gold); 
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .day-card {
+            background: rgba(128, 0, 0, 0.1);
+            border: 1px solid var(--inari-dark);
+            height: 95px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--inari-gold);
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(128, 0, 0, 0.4);
+        }
+
+        .day-card.completed {
+            background: var(--inari-maroon);
+            border-color: var(--inari-gold);
+            color: var(--inari-gold);
+            font-weight: bold;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.8rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 0, 0, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #100000;
+            border: 2px solid var(--inari-maroon);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.1);
+        }
+
+        .modal-header { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .modal-day { font-family: var(--font-title); color: var(--inari-gold); font-size: 1.2rem; letter-spacing: 2px; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--white); margin: 10px 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.7; color: #ccc; font-size: 1.1rem; margin-top: 20px; text-align: left; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 35px;
+            background: var(--inari-gold); border: none; color: #000;
+            font-family: var(--font-title); font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+            font-weight: bold;
+        }
+        .btn-action:hover { 
+            background: var(--inari-maroon); 
+            color: var(--white);
+            box-shadow: 0 0 20px var(--inari-maroon);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--inari-gold); 
+            font-size: 1.3rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--inari-maroon);
+            color: #888;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 25px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--inari-gold);
+            color: var(--inari-gold);
+            background: rgba(128, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>DUAL WIELDER</h1>
+        <div class="subtitle">Atsumu Miya Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "No necesito fanáticos que hagan ruido cuando estoy sacando. <br>
+                <strong>El que controla el balón, controla el juego."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                SETTER SKILL: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR SERVICIO</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--inari-maroon); cursor: pointer; float: right; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">PUNTO DIRECTO</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (ATSUMU STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: COLOCADOR DUAL (Saque, Colocación, Físico)
+            switch(dayType) {
+                case 1: 
+                    title = "PRECISIÓN DE COLOCADOR";
+                    description = `<strong>Objetivo:</strong> El pase perfecto.<br><br>• Colocación a canasta de basket (o objetivo alto): 50 reps<br>• Toque de dedos contra pared (Rápido): 3 min<br>• Colocación en salto (Jump Set)<br>• Desplazamiento lateral + Colocación`;
+                    break;
+                case 2: 
+                    title = "SAQUE DUAL (SPIKE/FLOAT)";
+                    description = `<strong>Objetivo:</strong> 4 vs 6 pasos.<br><br>• Saque en potencia (Spike Serve) técnica: 20 reps<br>• Saque flotante (Jump Float) técnica: 20 reps<br>• Sentadillas con salto (Potencia de piernas)<br>• Plancha abdominal (Core para el golpeo)`;
+                    break;
+                case 3: 
+                    title = "MOVILIDAD DE ZORRO";
+                    description = `<strong>Objetivo:</strong> Llegar a cualquier balón.<br><br>• Suicidios (Sprints ida y vuelta): 5 series<br>• Burpees (Recuperación del suelo)<br>• Flexibilidad de espalda (Arco)<br>• Pasos cruzados rápidos (Agilidad)`;
+                    break;
+                case 4: 
+                    title = "JUEGO MENTAL";
+                    description = `<strong>Objetivo:</strong> Engañar al bloqueo.<br><br>• Finta de colocación (Dump) a una mano<br>• Salto de bloqueo + Salida a colocar<br>• Visualización: Leer al bloqueador<br>• Estudio de video (Patrones de ataque)`;
+                    break;
+                case 0: 
+                    title = "DESCANSO DEL REY";
+                    description = `<strong>Objetivo:</strong> Mantenimiento.<br><br>• Masaje de dedos y muñecas<br>• Estiramiento completo de hombros<br>• Comida favorita (Atún graso)<br>• Dormir para reiniciar el cerebro`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación suave
+                dayDiv.style.animation = `foxPulse 3s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${i * 0.05}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🦊</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Doradas/Granates) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: ZORRO (Inarizaki)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🦊</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('atsumu_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('atsumu_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de reiniciar el protocolo? Se perderá todo el progreso.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 8 + 3 + 'px';
+                particle.style.height = particle.style.width;
+                
+                // Colores: Dorado y Granate
+                const colors = ['#FFD700', '#800000', '#ffffff'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Partículas redondas
+                particle.style.borderRadius = '50%'; 
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento explosivo
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 80 + 30;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>
