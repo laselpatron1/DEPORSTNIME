@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuroko no Basket - Ultimate Roster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CONFIGURACIÓN GENERAL --- */
+        :root {
+            --dark-bg: #050505; 
+            --text-color: #ffffff;
+            --knb-accent: #00BFFF; /* Azul eléctrico general */
+            
+            /* --- COLORES DE PERSONAJES --- */
+            
+            /* SEIRIN */
+            --kuroko-color: #87CEEB;   /* Celeste Sombra */
+            --kagami-color: #FF0000;   /* Rojo Meteor */
+            --kiyoshi-color: #8B4513;  /* Marrón Corazón de Hierro */
+            --hyuga-color: #2F4F4F;    /* Gris Pizarra Oscuro (Clutch) */
+            
+            /* KISEKI NO SEDAI (Generación de los Milagros) */
+            --kise-color: #FFD700;     /* Dorado Copia */
+            --midorima-color: #32CD32; /* Verde Lima 3PT */
+            --aomine-color: #000080;   /* Azul Marino Ace */
+            --murasakibara-color: #9400D3; /* Violeta Oscuro */
+            --akashi-color: #DC143C;   /* Carmesí Emperador */
+
+            /* RAKUZAN (Reyes Destronados) */
+            --mibuchi-color: #DA70D6;  /* Orquídea (Yaksha) */
+            --hayama-color: #FFA500;   /* Naranja Eléctrico (Raiju) */
+            --nebuya-color: #8B0000;   /* Rojo Oscuro Muscular */
+
+            /* RIVALES Y OTROS */
+            --himuro-color: #778899;   /* Gris Azulado (Mirage) */
+            --takao-color: #FF8C00;    /* Naranja Halcón */
+            --haizaki-color: #696969;  /* Gris Ceniza (Robo) */
+            --hanamiya-color: #006400; /* Verde Veneno (Araña) */
+            --momoi-color: #FF69B4;    /* Rosa Analista */
+
+            --font-title: 'Teko', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- FONDO ANIMADO --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0.98)),
+                repeating-linear-gradient(45deg, transparent, transparent 2px, #101520 2px, #101520 4px);
+            z-index: -1;
+            background-size: 50px 50px;
+        }
+
+        /* --- BOTÓN VOLVER --- */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            text-decoration: none;
+            color: #fff;
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            border-radius: 0px; 
+            clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+        }
+        .back-btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: skew(-10deg);
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-top: 6vh;
+            margin-bottom: 6vh;
+            padding: 0 20px;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 5rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            line-height: 1;
+            background: linear-gradient(90deg, var(--kuroko-color), #fff, var(--akashi-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--knb-accent);
+            text-transform: uppercase;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        /* --- SECCIONES --- */
+        .section-title {
+            width: 90%;
+            max-width: 1500px;
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: #444;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+            margin-top: 40px;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- GRID --- */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            width: 90%;
+            max-width: 1500px;
+            padding-bottom: 30px;
+        }
+
+        /* --- TARJETAS --- */
+        .char-card {
+            position: relative;
+            height: 450px;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid #1a2f45;
+            background: #0b1118;
+            text-decoration: none;
+            display: block;
+            clip-path: polygon(0 0, 100% 0, 100% 88%, 88% 100%, 0 100%);
+            
+            /* OPTIMIZACIÓN DE RENDERIZADO */
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 450px;
+        }
+
+        .char-bg {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: top center;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            filter: grayscale(100%) brightness(0.6) contrast(1.2);
+            /* Importante: Sin imagen por defecto para optimizar carga inicial */
+        }
+
+        .char-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 85%;
+            background: linear-gradient(to top, rgba(0,0,0,1) 10%, transparent);
+            z-index: 1;
+        }
+
+        .char-info {
+            position: absolute; bottom: 20px; left: 20px; z-index: 2;
+            transition: opacity 0.3s ease;
+            border-left: 3px solid #555;
+            padding-left: 12px;
+        }
+
+        .rank-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .char-name {
+            font-family: var(--font-title);
+            font-size: 2.8rem;
+            line-height: 0.9;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+        }
+
+        .char-weapon {
+            font-size: 0.8rem;
+            color: var(--knb-accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* --- HOVER EFFECTS --- */
+        .char-card:hover .char-bg { filter: grayscale(0%) brightness(1.1); transform: scale(1.05); }
+        .char-card:hover { z-index: 10; transform: translateY(-5px); }
+
+        /* Estilos específicos por personaje (Colores) + LAZY LOADING */
+        /* Nota: La imagen solo se carga cuando se añade la clase .visible */
+        
+        /* SEIRIN */
+        .kuroko:hover { border-color: var(--kuroko-color); box-shadow: 0 0 20px rgba(135,206,235,0.3); }
+        .kuroko:hover .char-name, .kuroko:hover .char-info { color: var(--kuroko-color); border-left-color: var(--kuroko-color); }
+        .kuroko.visible .char-bg { background-image: url('basquet/imagenes/KUROKO.png'); }
+
+        .kagami:hover { border-color: var(--kagami-color); box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+        .kagami:hover .char-name, .kagami:hover .char-info { color: var(--kagami-color); border-left-color: var(--kagami-color); }
+        .kagami.visible .char-bg { background-image: url('basquet/imagenes/KAGAMI.png'); }
+
+        .kiyoshi:hover { border-color: var(--kiyoshi-color); box-shadow: 0 0 20px rgba(139,69,19,0.3); }
+        .kiyoshi:hover .char-name, .kiyoshi:hover .char-info { color: var(--kiyoshi-color); border-left-color: var(--kiyoshi-color); }
+        .kiyoshi.visible .char-bg { background-image: url('basquet/imagenes/KIYOSHI.png'); }
+
+        .hyuga:hover { border-color: var(--hyuga-color); box-shadow: 0 0 20px rgba(47,79,79,0.5); }
+        .hyuga:hover .char-name, .hyuga:hover .char-info { color: #fff; border-left-color: var(--hyuga-color); text-shadow: 0 0 10px var(--hyuga-color); }
+        .hyuga.visible .char-bg { background-image: url('basquet/imagenes/HYUGA.png'); }
+
+        /* GOM */
+        .kise:hover { border-color: var(--kise-color); box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .kise:hover .char-name, .kise:hover .char-info { color: var(--kise-color); border-left-color: var(--kise-color); }
+        .kise.visible .char-bg { background-image: url('basquet/imagenes/KISE.png'); }
+
+        .midorima:hover { border-color: var(--midorima-color); box-shadow: 0 0 20px rgba(50,205,50,0.3); }
+        .midorima:hover .char-name, .midorima:hover .char-info { color: var(--midorima-color); border-left-color: var(--midorima-color); }
+        .midorima.visible .char-bg { background-image: url('basquet/imagenes/MIDORIMA.png'); }
+
+        .aomine:hover { border-color: var(--aomine-color); box-shadow: 0 0 20px rgba(0,0,128,0.5); }
+        .aomine:hover .char-name, .aomine:hover .char-info { color: #aaaaff; border-left-color: var(--aomine-color); }
+        .aomine.visible .char-bg { background-image: url('basquet/imagenes/AOMINE.png'); }
+
+        .murasakibara:hover { border-color: var(--murasakibara-color); box-shadow: 0 0 20px rgba(148,0,211,0.3); }
+        .murasakibara:hover .char-name, .murasakibara:hover .char-info { color: var(--murasakibara-color); border-left-color: var(--murasakibara-color); }
+        .murasakibara.visible .char-bg { background-image: url('basquet/imagenes/MURASAKIBARA.png'); }
+
+        .akashi:hover { border-color: var(--akashi-color); box-shadow: 0 0 20px rgba(220,20,60,0.4); }
+        .akashi:hover .char-name, .akashi:hover .char-info { color: var(--akashi-color); border-left-color: var(--akashi-color); }
+        .akashi.visible .char-bg { background-image: url('basquet/imagenes/AKASHI.png'); }
+
+        /* RAKUZAN KINGS */
+        .mibuchi:hover { border-color: var(--mibuchi-color); box-shadow: 0 0 20px rgba(218,112,214,0.3); }
+        .mibuchi:hover .char-name, .mibuchi:hover .char-info { color: var(--mibuchi-color); border-left-color: var(--mibuchi-color); }
+        .mibuchi.visible .char-bg { background-image: url('basquet/imagenes/MIBUCHI.png'); }
+
+        .hayama:hover { border-color: var(--hayama-color); box-shadow: 0 0 20px rgba(255,165,0,0.3); }
+        .hayama:hover .char-name, .hayama:hover .char-info { color: var(--hayama-color); border-left-color: var(--hayama-color); }
+        .hayama.visible .char-bg { background-image: url('basquet/imagenes/HAYAMA.png'); }
+
+        .nebuya:hover { border-color: var(--nebuya-color); box-shadow: 0 0 20px rgba(139,0,0,0.3); }
+        .nebuya:hover .char-name, .nebuya:hover .char-info { color: #ff9999; border-left-color: var(--nebuya-color); }
+        .nebuya.visible .char-bg { background-image: url('basquet/imagenes/NEBUYA.png'); }
+
+        /* RIVALS */
+        .himuro:hover { border-color: var(--himuro-color); box-shadow: 0 0 20px rgba(119,136,153,0.3); }
+        .himuro:hover .char-name, .himuro:hover .char-info { color: #d0e0f0; border-left-color: var(--himuro-color); }
+        .himuro.visible .char-bg { background-image: url('basquet/imagenes/HIMURO.png'); }
+
+        .takao:hover { border-color: var(--takao-color); box-shadow: 0 0 20px rgba(255,140,0,0.3); }
+        .takao:hover .char-name, .takao:hover .char-info { color: var(--takao-color); border-left-color: var(--takao-color); }
+        .takao.visible .char-bg { background-image: url('basquet/imagenes/TAKAO.png'); }
+
+        .haizaki:hover { border-color: var(--haizaki-color); box-shadow: 0 0 20px rgba(105,105,105,0.4); }
+        .haizaki:hover .char-name, .haizaki:hover .char-info { color: #ddd; border-left-color: var(--haizaki-color); }
+        .haizaki.visible .char-bg { background-image: url('basquet/imagenes/HAIZAKI.png'); }
+
+        .hanamiya:hover { border-color: var(--hanamiya-color); box-shadow: 0 0 20px rgba(0,100,0,0.4); }
+        .hanamiya:hover .char-name, .hanamiya:hover .char-info { color: #32CD32; border-left-color: var(--hanamiya-color); }
+        .hanamiya.visible .char-bg { background-image: url('basquet/imagenes/HANAMIYA.png'); }
+
+        /* ANIMACIONES */
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        .fade-in { animation: fadeInUp 0.8s ease backwards; }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; letter-spacing: 2px; }
+            .character-grid { grid-template-columns: 1fr; width: 85%; }
+            .char-card { height: 400px; }
+            .section-title { font-size: 1.5rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-mesh"></div>
+
+    <audio id="bg-music" loop autoplay>
+        <source src="basquetbol.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="hover-sound" preload="auto">
+        <source src="seleccion.mp3" type="audio/mpeg">
+    </audio>
+
+    <a href="index.html" class="back-btn">⬅ Volver a la Página Principal</a>
+
+    <header>
+        <h1>KUROKO NO BASKET</h1>
+        <div class="subtitle">Winter Cup & Interhigh Heroes</div>
+    </header>
+
+    <div class="section-title fade-in">Seirin High School</div>
+    <div class="character-grid">
+        <a href="basquet/Kuroko.html" class="char-card kuroko fade-in" style="animation-delay: 0.1s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">#11 / The Shadow</span><div class="char-name">Tetsuya<br>Kuroko</div><div class="char-weapon">Misdirection / Phantom Shot</div></div>
+        </a>
+        <a href="basquet/Kagami.html" class="char-card kagami fade-in" style="animation-delay: 0.15s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">#10 / The Light (Ace)</span><div class="char-name">Taiga<br>Kagami</div><div class="char-weapon">Meteor Jam / Zone</div></div>
+        </a>
+        <a href="basquet/Kiyoshi.html" class="char-card kiyoshi fade-in" style="animation-delay: 0.2s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">#7 / Center</span><div class="char-name">Teppei<br>Kiyoshi</div><div class="char-weapon">Right of Postponement / Iron Heart</div></div>
+        </a>
+        <a href="basquet/Hyuga.html" class="char-card hyuga fade-in" style="animation-delay: 0.25s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">#4 / Captain</span><div class="char-name">Junpei<br>Hyuga</div><div class="char-weapon">Barrier Jumper / Clutch Shooter</div></div>
+        </a>
+    </div>
+
+    <div class="section-title fade-in">Generation of Miracles</div>
+    <div class="character-grid">
+        <a href="basquet/Kise.html" class="char-card kise fade-in" style="animation-delay: 0.3s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Kaijo High / Ace</span><div class="char-name">Ryota<br>Kise</div><div class="char-weapon">Perfect Copy / Zone</div></div>
+        </a>
+        <a href="basquet/Midorima.html" class="char-card midorima fade-in" style="animation-delay: 0.35s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Shutoku High / Ace</span><div class="char-name">Shintaro<br>Midorima</div><div class="char-weapon">High Projectile Three / 100% Accuracy</div></div>
+        </a>
+        <a href="basquet/Aomine.html" class="char-card aomine fade-in" style="animation-delay: 0.4s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Too Academy / Ace</span><div class="char-name">Daiki<br>Aomine</div><div class="char-weapon">Formless Shot / Speed Limitless</div></div>
+        </a>
+        <a href="basquet/Murasakibara.html" class="char-card murasakibara fade-in" style="animation-delay: 0.45s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Yosen High / Center</span><div class="char-name">Atsushi<br>Murasakibara</div><div class="char-weapon">Thor's Hammer / Absolute Defense</div></div>
+        </a>
+        <a href="basquet/Akashi.html" class="char-card akashi fade-in" style="animation-delay: 0.5s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Rakuzan High / Captain</span><div class="char-name">Seijuro<br>Akashi</div><div class="char-weapon">Emperor Eye / Ankle Break</div></div>
+        </a>
+    </div>
+
+    <div class="section-title fade-in">Uncrowned Kings (Rakuzan)</div>
+    <div class="character-grid">
+        <a href="basquet/Mibuchi.html" class="char-card mibuchi fade-in" style="animation-delay: 0.55s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Rakuzan / SG</span><div class="char-name">Reo<br>Mibuchi</div><div class="char-weapon">Heaven, Earth & Void Shots</div></div>
+        </a>
+        <a href="basquet/Hayama.html" class="char-card hayama fade-in" style="animation-delay: 0.6s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Rakuzan / SF</span><div class="char-name">Kotaro<br>Hayama</div><div class="char-weapon">Lightning Dribble (Raiju)</div></div>
+        </a>
+        <a href="basquet/Nebuya.html" class="char-card nebuya fade-in" style="animation-delay: 0.65s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Rakuzan / C</span><div class="char-name">Eikichi<br>Nebuya</div><div class="char-weapon">Muscle Power / Rebound</div></div>
+        </a>
+    </div>
+
+    <div class="section-title fade-in">Rivals & Specialists</div>
+    <div class="character-grid">
+        <a href="basquet/Himuro.html" class="char-card himuro fade-in" style="animation-delay: 0.75s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Yosen High / SG</span><div class="char-name">Tatsuya<br>Himuro</div><div class="char-weapon">Mirage Shot / Perfect Fakes</div></div>
+        </a>
+        <a href="basquet/Takao.html" class="char-card takao fade-in" style="animation-delay: 0.8s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Shutoku High / PG</span><div class="char-name">Kazunari<br>Takao</div><div class="char-weapon">Hawk Eye / Shadow Stopper</div></div>
+        </a>
+        <a href="basquet/Haizaki.html" class="char-card haizaki fade-in" style="animation-delay: 0.85s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Fukuda Sogo / SF</span><div class="char-name">Shogo<br>Haizaki</div><div class="char-weapon">Pillage (Steal Moves)</div></div>
+        </a>
+        <a href="basquet/Hanamiya.html" class="char-card hanamiya fade-in" style="animation-delay: 0.9s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><span class="rank-badge">Kirisaki Daiichi / Bad Boy</span><div class="char-name">Makoto<br>Hanamiya</div><div class="char-weapon">Spider Web / Teardrop Shot</div></div>
+        </a>
+    </div>
+
+    <script>
+        // --- LÓGICA DE AUDIO DE FONDO ---
+        function tryPlayAudio() {
+            const audio = document.getElementById('bg-music');
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Esperando interacción para reproducir música de fondo..."));
+            }
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            tryPlayAudio();
+            const bg = document.querySelector('.bg-mesh');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            bg.style.backgroundPosition = `${x * 15}px ${y * 15}px`;
+        });
+
+        document.addEventListener('click', tryPlayAudio);
+
+        // --- LÓGICA DE EFECTO HOVER (Selección) ---
+        const hoverSound = document.getElementById('hover-sound');
+        const interactiveElements = document.querySelectorAll('.char-card, .back-btn');
+
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                hoverSound.currentTime = 0;
+                hoverSound.play().catch(e => console.log("Error al reproducir efecto hover:", e));
+            });
+        });
+
+        // --- OPTIMIZACIÓN DE IMÁGENES (LAZY LOADING) ---
+        // Este código detecta cuándo una carta entra en la pantalla y carga su imagen solo entonces.
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        card.classList.add('visible'); // Activa el CSS para cargar la imagen
+                        observer.unobserve(card); // Deja de observar (ya se cargó)
+                    }
+                });
+            }, { rootMargin: "200px" }); // Carga 200px antes de llegar a la tarjeta
+
+            document.querySelectorAll('.char-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

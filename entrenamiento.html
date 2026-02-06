@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Gym Elite - Selección de Mentor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CONFIGURACIÓN GENERAL --- */
+        :root {
+            --dark-bg: #050505;
+            --text-color: #ffffff;
+            
+            /* --- COLORES DE PERSONAJES (Auras) --- */
+            --goku-orange: #FF5722;     /* Dragon Ball */
+            --baki-red: #D50000;        /* Baki Hanma */
+            --toji-green: #2E7D32;      /* JJK (Verde Oscuro) */
+            --guts-dark: #8B0000;       /* Berserk (Rojo Sangre) */
+            --zoro-emerald: #00FF7F;    /* One Piece */
+            --saitama-yellow: #FFD700;  /* One Punch Man */
+            --eren-brown: #795548;      /* AOT (Titan) */
+            --jinwoo-blue: #00BFFF;     /* Solo Leveling */
+            --kunigami-orange: #FF8C00; /* Blue Lock (Wild Hero) */
+            
+            --font-title: 'Teko', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- FONDO ANIMADO (Estilo Gym/Metal) --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
+                repeating-linear-gradient(45deg, transparent, transparent 10px, #1a1a1a 10px, #1a1a1a 20px);
+            z-index: -1;
+        }
+
+        /* --- BOTÓN VOLVER --- */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            text-decoration: none;
+            color: #fff;
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            border-radius: 0px; /* Bordes rectos para estilo más rudo */
+            clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+        }
+        .back-btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: skew(-10deg);
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-top: 8vh;
+            margin-bottom: 5vh;
+            padding: 0 20px;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 6rem;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            line-height: 0.9;
+            background: linear-gradient(180deg, #fff, #555);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(255,255,255,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            color: #d32f2f; /* Rojo acento */
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+
+        /* --- GRID DE PERSONAJES --- */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 1600px;
+            padding-bottom: 80px;
+        }
+
+        /* --- TARJETA DE PERSONAJE --- */
+        .char-card {
+            position: relative;
+            height: 450px; /* Más altas para mostrar el físico */
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid #333;
+            background: #0a0a0a;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            
+            /* OPTIMIZACIÓN DE RENDERIZADO */
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 450px;
+        }
+
+        .char-bg {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center top; /* Enfoca la parte superior del cuerpo */
+            transition: transform 0.6s ease, filter 0.6s ease;
+            filter: grayscale(100%) brightness(0.5) contrast(1.2);
+            /* Imagen se carga via CSS lazy loading */
+        }
+
+        .char-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,1) 10%, transparent);
+            z-index: 1;
+        }
+
+        .char-info {
+            position: absolute; bottom: 25px; left: 25px; z-index: 2;
+        }
+
+        .anime-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 5px 10px;
+            background: #fff;
+            color: #000;
+            display: inline-block;
+            margin-bottom: 10px;
+            transform: skew(-10deg);
+        }
+
+        .char-name {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            line-height: 0.85;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+            font-weight: 700;
+        }
+
+        .char-role {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: 400;
+            letter-spacing: 1px;
+            border-left: 2px solid #555;
+            padding-left: 10px;
+        }
+
+        /* --- HOVER EFFECTS Y LAZY LOADING (POR PERSONAJE) --- */
+        .char-card:hover .char-bg { filter: grayscale(0%) brightness(1.1) contrast(1.1); transform: scale(1.05); }
+        .char-card:hover { transform: translateY(-10px); z-index: 10; }
+
+        /* GOKU */
+        .goku.visible .char-bg { background-image: url('entrenamiento/imagenes/GOKU.png'); }
+        .goku:hover { border-color: var(--goku-orange); box-shadow: 0 0 30px rgba(255, 87, 34, 0.4); }
+        .goku:hover .char-name { color: var(--goku-orange); }
+        .goku:hover .anime-badge { background: var(--goku-orange); color: #fff; }
+
+        /* BAKI */
+        .baki.visible .char-bg { background-image: url('entrenamiento/imagenes/BAKI.png'); }
+        .baki:hover { border-color: var(--baki-red); box-shadow: 0 0 30px rgba(213, 0, 0, 0.4); }
+        .baki:hover .char-name { color: var(--baki-red); }
+        .baki:hover .anime-badge { background: var(--baki-red); color: #fff; }
+
+        /* TOJI */
+        .toji.visible .char-bg { background-image: url('entrenamiento/imagenes/TOJI.png'); }
+        .toji:hover { border-color: var(--toji-green); box-shadow: 0 0 30px rgba(46, 125, 50, 0.4); }
+        .toji:hover .char-name { color: var(--toji-green); }
+        .toji:hover .anime-badge { background: var(--toji-green); color: #fff; }
+
+        /* GUTS */
+        .guts.visible .char-bg { background-image: url('entrenamiento/imagenes/GUTS.png'); }
+        .guts:hover { border-color: var(--guts-dark); box-shadow: 0 0 30px rgba(139, 0, 0, 0.4); }
+        .guts:hover .char-name { color: var(--guts-dark); }
+        .guts:hover .anime-badge { background: var(--guts-dark); color: #fff; }
+
+        /* ZORO */
+        .zoro.visible .char-bg { background-image: url('entrenamiento/imagenes/ZORO.png'); }
+        .zoro:hover { border-color: var(--zoro-emerald); box-shadow: 0 0 30px rgba(0, 255, 127, 0.4); }
+        .zoro:hover .char-name { color: var(--zoro-emerald); }
+        .zoro:hover .anime-badge { background: var(--zoro-emerald); color: #000; }
+
+        /* SAITAMA */
+        .saitama.visible .char-bg { background-image: url('entrenamiento/imagenes/SAITAMA.png'); }
+        .saitama:hover { border-color: var(--saitama-yellow); box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); }
+        .saitama:hover .char-name { color: var(--saitama-yellow); }
+        .saitama:hover .anime-badge { background: var(--saitama-yellow); color: #000; }
+
+        /* EREN */
+        .eren.visible .char-bg { background-image: url('entrenamiento/imagenes/EREN.png'); }
+        .eren:hover { border-color: var(--eren-brown); box-shadow: 0 0 30px rgba(121, 85, 72, 0.4); }
+        .eren:hover .char-name { color: var(--eren-brown); }
+        .eren:hover .anime-badge { background: var(--eren-brown); color: #fff; }
+
+        /* SUNG JIN WOO */
+        .jinwoo.visible .char-bg { background-image: url('entrenamiento/imagenes/JINWOO.png'); }
+        .jinwoo:hover { border-color: var(--jinwoo-blue); box-shadow: 0 0 30px rgba(0, 191, 255, 0.4); }
+        .jinwoo:hover .char-name { color: var(--jinwoo-blue); }
+        .jinwoo:hover .anime-badge { background: var(--jinwoo-blue); color: #fff; }
+
+        /* KUNIGAMI (BLUE LOCK) */
+        .kunigami.visible .char-bg { background-image: url('entrenamiento/imagenes/KUNIGAMI.png'); }
+        .kunigami:hover { border-color: var(--kunigami-orange); box-shadow: 0 0 30px rgba(255, 140, 0, 0.4); }
+        .kunigami:hover .char-name { color: var(--kunigami-orange); }
+        .kunigami:hover .anime-badge { background: var(--kunigami-orange); color: #000; }
+
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        .fade-in { animation: fadeInUp 0.8s ease backwards; }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(50px); } to { opacity:1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; letter-spacing: 2px; }
+            .character-grid { grid-template-columns: 1fr; width: 90%; }
+            .char-card { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-mesh"></div>
+
+    <audio id="bg-music" loop autoplay>
+        <source src="entrenamiento.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="hover-sound" preload="auto">
+        <source src="seleccion.mp3" type="audio/mpeg">
+    </audio>
+
+    <a href="index.html" class="back-btn">⬅ Salir del entrenamiento</a>
+
+    <header>
+        <h1>PHYSIQUE GODS</h1>
+        <div class="subtitle">Elige tu arquetipo de construcción corporal</div>
+    </header>
+
+    <div class="character-grid">
+
+        <a href="entrenamiento/Goku.html" class="char-card goku fade-in" style="animation-delay: 0.1s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Dragon Ball</div>
+                <div class="char-name">Son<br>Goku</div>
+                <div class="char-role">Entrenamiento de Gravedad</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Baki.html" class="char-card baki fade-in" style="animation-delay: 0.15s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Baki Hanma</div>
+                <div class="char-name">Baki<br>Hanma</div>
+                <div class="char-role">Calistenia Extrema</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Toji.html" class="char-card toji fade-in" style="animation-delay: 0.2s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Jujutsu Kaisen</div>
+                <div class="char-name">Toji<br>Fushiguro</div>
+                <div class="char-role">Fuerza Pura / Crossfit</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Guts.html" class="char-card guts fade-in" style="animation-delay: 0.25s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Berserk</div>
+                <div class="char-name">Guts<br>The Black</div>
+                <div class="char-role">Levantamiento Pesado (Espada)</div>
+            </div>
+        </a>
+        
+        <a href="entrenamiento/Zoro.html" class="char-card zoro fade-in" style="animation-delay: 0.3s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">One Piece</div>
+                <div class="char-name">Roronoa<br>Zoro</div>
+                <div class="char-role">Entrenamiento de Pesas</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Saitama.html" class="char-card saitama fade-in" style="animation-delay: 0.35s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">One Punch Man</div>
+                <div class="char-name">Saitama<br>Sensei</div>
+                <div class="char-role">100 Flexiones / Cardio</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Eren.html" class="char-card eren fade-in" style="animation-delay: 0.4s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Attack on Titan</div>
+                <div class="char-name">Eren<br>Yeager</div>
+                <div class="char-role">Definición (Shredded)</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Jimwoo.html" class="char-card jinwoo fade-in" style="animation-delay: 0.45s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Solo Leveling</div>
+                <div class="char-name">Sung<br>Jin-Woo</div>
+                <div class="char-role">Desafío Diario (Glow Up)</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento/Kunigami.html" class="char-card kunigami fade-in" style="animation-delay: 0.5s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info">
+                <div class="anime-badge">Blue Lock</div>
+                <div class="char-name">Rensuke<br>Kunigami</div>
+                <div class="char-role">Héroe Caído / Físico Total</div>
+            </div>
+        </a>
+
+    </div>
+
+    <script>
+        // --- LÓGICA DE AUDIO DE FONDO ---
+        function tryPlayAudio() {
+            const audio = document.getElementById('bg-music');
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Click para música..."));
+            }
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            tryPlayAudio();
+            const bg = document.querySelector('.bg-mesh');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            // Movimiento más lento para dar sensación de peso
+            bg.style.backgroundPosition = `${x * 10}px ${y * 10}px`;
+        });
+
+        document.addEventListener('click', tryPlayAudio);
+
+        // --- LÓGICA DE EFECTO HOVER ---
+        const hoverSound = document.getElementById('hover-sound');
+        
+        const interactiveElements = document.querySelectorAll('.char-card, .back-btn');
+
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                hoverSound.currentTime = 0;
+                hoverSound.play().catch(e => console.log("Error audio hover"));
+            });
+        });
+
+        // --- OPTIMIZACIÓN DE IMÁGENES (LAZY LOADING) ---
+        // Solo carga las imágenes cuando la carta está cerca de ser vista en pantalla
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        card.classList.add('visible'); // Esta clase activa la imagen en el CSS
+                        observer.unobserve(card); // Deja de vigilar para ahorrar memoria
+                    }
+                });
+            }, { rootMargin: "200px" }); // Carga 200px antes de llegar al elemento
+
+            document.querySelectorAll('.char-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

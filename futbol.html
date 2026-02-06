@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Lock Project - Selección de Strikers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CONFIGURACIÓN GENERAL --- */
+        :root {
+            /* Fondo más azulado/tecnológico */
+            --dark-bg: #000510; 
+            --text-color: #ffffff;
+            
+            /* Colores de Aura (Blue Lock) */
+            --blue-lock-accent: #00F0FF; /* Cian característico */
+            
+            /* Personajes Principales */
+            --isagi-color: #39FF14;   /* Verde Neón */
+            --bachira-color: #FFFF00; /* Amarillo */
+            --chigiri-color: #FF0055; /* Rojo/Rosado */
+            --kunigami-color: #FF6600; /* Naranja Héroe */
+            --gagamaru-color: #B0C4DE; /* Gris Azulado (Oso) */
+            
+            /* Rivalidad Nagi/Reo */
+            --nagi-color: #FFFFFF;    /* Blanco/Calavera */
+            --reo-color: #9932CC;     /* Morado Camaleón */
+            
+            /* Rivales y Villanos */
+            --rin-color: #008891;     /* Verde Azulado */
+            --barou-color: #DC143C;   /* Rojo Carmesí (Rey) */
+            --niko-color: #556B2F;    /* Verde Oscuro Oculto */
+            --shidou-color: #FF00FF;  /* Magenta Demonio */
+            
+            /* Top Players */
+            --karasu-color: #00CED1;  /* Turquesa Oscuro (Cuervo) */
+            --otoya-color: #32CD32;   /* Verde Lima (Ninja) */
+            --yukimiya-color: #FFD700; /* Dorado Emperador */
+            
+            /* New Gen 11 / U20 / Org */
+            --sae-color: #800000;     /* Borgoña */
+            --aiku-color: #808000;    /* Oliva/Heterocromía */
+            --ego-color: #666666;     /* Gris Oscuro Estático */
+
+            --font-title: 'Teko', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- FONDO ANIMADO --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(0, 5, 16, 0.85), rgba(0, 5, 16, 0.95)),
+                repeating-linear-gradient(0deg, transparent, transparent 1px, #001a33 1px, #001a33 2px),
+                repeating-linear-gradient(90deg, transparent, transparent 1px, #001a33 1px, #001a33 2px);
+            z-index: -1;
+            background-size: 40px 40px;
+        }
+
+        /* --- BOTÓN VOLVER (Fixed Top Left) --- */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            text-decoration: none;
+            color: #fff;
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        } 
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-top: 5vh;
+            margin-bottom: 5vh;
+            padding: 0 20px;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 5rem;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            line-height: 1;
+            background: linear-gradient(90deg, #fff, var(--blue-lock-accent), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--blue-lock-accent);
+            text-transform: uppercase;
+            margin-top: 10px;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        /* --- GRID DE PERSONAJES --- */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 1600px; 
+            padding-bottom: 50px;
+        }
+
+        /* --- TARJETA DE PERSONAJE --- */
+        .char-card {
+            position: relative;
+            height: 480px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid #1a2f45;
+            background: #0b1118;
+            text-decoration: none;
+            display: block;
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+
+            /* OPTIMIZACIÓN DE RENDERIZADO */
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 480px;
+        }
+
+        .char-bg {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: top center;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            filter: grayscale(100%) brightness(0.6) contrast(1.2);
+        }
+
+        .char-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 80%;
+            background: linear-gradient(to top, rgba(0,5,16,1) 15%, transparent);
+            z-index: 1;
+        }
+
+        .char-info {
+            position: absolute; bottom: 30px; left: 25px; z-index: 2;
+            transition: opacity 0.3s ease;
+            border-left: 2px solid var(--blue-lock-accent);
+            padding-left: 15px;
+        }
+
+        .rank-badge {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .char-name {
+            font-family: var(--font-title);
+            font-size: 3rem; 
+            line-height: 0.85;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .char-weapon {
+            font-size: 0.85rem;
+            color: var(--blue-lock-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* --- ESTILOS ACTIVOS (HOVER) --- */
+        .char-card:hover .char-bg { filter: grayscale(0%) brightness(1.1); transform: scale(1.05); }
+        .char-card:hover { border-color: #fff; z-index: 10; transform: translateY(-5px); }
+
+        /* --- CLASES POR PERSONAJE (OPTIMIZADO CON LAZY LOADING) --- */
+        
+        /* Isagi */
+        .isagi.visible .char-bg { background-image: url('futbol/imagenes/ISAGI.png'); }
+        .isagi:hover { box-shadow: 0 0 30px rgba(57, 255, 20, 0.3); }
+        .isagi:hover .char-name { color: var(--isagi-color); }
+        .isagi:hover .char-info { border-left-color: var(--isagi-color); }
+
+        /* Bachira */
+        .bachira.visible .char-bg { background-image: url('futbol/imagenes/BACHIRA.png'); }
+        .bachira:hover { box-shadow: 0 0 30px rgba(255, 255, 0, 0.3); }
+        .bachira:hover .char-name { color: var(--bachira-color); }
+        .bachira:hover .char-info { border-left-color: var(--bachira-color); }
+
+        /* Chigiri */
+        .chigiri.visible .char-bg { background-image: url('futbol/imagenes/CHIGIRI.png'); }
+        .chigiri:hover { box-shadow: 0 0 30px rgba(255, 0, 85, 0.3); }
+        .chigiri:hover .char-name { color: var(--chigiri-color); }
+        .chigiri:hover .char-info { border-left-color: var(--chigiri-color); }
+
+        /* Kunigami */
+        .kunigami.visible .char-bg { background-image: url('futbol/imagenes/KUNIGAMI.png'); }
+        .kunigami:hover { box-shadow: 0 0 30px rgba(255, 102, 0, 0.3); }
+        .kunigami:hover .char-name { color: var(--kunigami-color); }
+        .kunigami:hover .char-info { border-left-color: var(--kunigami-color); }
+
+        /* Gagamaru */
+        .gagamaru.visible .char-bg { background-image: url('futbol/imagenes/GAGAMARU.png'); }
+        .gagamaru:hover { box-shadow: 0 0 30px rgba(176, 196, 222, 0.3); }
+        .gagamaru:hover .char-name { color: var(--gagamaru-color); }
+        .gagamaru:hover .char-info { border-left-color: var(--gagamaru-color); }
+
+        /* Nagi */
+        .nagi.visible .char-bg { background-image: url('futbol/imagenes/NAGI.png'); }
+        .nagi:hover { box-shadow: 0 0 30px rgba(255, 255, 255, 0.3); }
+        .nagi:hover .char-name { color: var(--nagi-color); }
+        .nagi:hover .char-info { border-left-color: var(--nagi-color); }
+
+        /* Reo */
+        .reo.visible .char-bg { background-image: url('futbol/imagenes/REO.png'); }
+        .reo:hover { box-shadow: 0 0 30px rgba(153, 50, 204, 0.3); }
+        .reo:hover .char-name { color: var(--reo-color); }
+        .reo:hover .char-info { border-left-color: var(--reo-color); }
+
+        /* Rin */
+        .rin.visible .char-bg { background-image: url('futbol/imagenes/RIN.png'); }
+        .rin:hover { box-shadow: 0 0 30px rgba(0, 136, 145, 0.3); }
+        .rin:hover .char-name { color: var(--rin-color); }
+        .rin:hover .char-info { border-left-color: var(--rin-color); }
+
+        /* Barou */
+        .barou.visible .char-bg { background-image: url('futbol/imagenes/BAROU.png'); }
+        .barou:hover { box-shadow: 0 0 30px rgba(220, 20, 60, 0.3); }
+        .barou:hover .char-name { color: var(--barou-color); }
+        .barou:hover .char-info { border-left-color: var(--barou-color); }
+
+        /* Niko */
+        .niko.visible .char-bg { background-image: url('futbol/imagenes/NIKO.png'); }
+        .niko:hover { box-shadow: 0 0 30px rgba(85, 107, 47, 0.3); }
+        .niko:hover .char-name { color: var(--niko-color); }
+        .niko:hover .char-info { border-left-color: var(--niko-color); }
+
+        /* Shidou */
+        .shidou.visible .char-bg { background-image: url('futbol/imagenes/SHIDOU.png'); }
+        .shidou:hover { box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); }
+        .shidou:hover .char-name { color: var(--shidou-color); }
+        .shidou:hover .char-info { border-left-color: var(--shidou-color); }
+
+        /* Karasu */
+        .karasu.visible .char-bg { background-image: url('futbol/imagenes/KARASU.png'); }
+        .karasu:hover { box-shadow: 0 0 30px rgba(0, 206, 209, 0.3); }
+        .karasu:hover .char-name { color: var(--karasu-color); }
+        .karasu:hover .char-info { border-left-color: var(--karasu-color); }
+
+        /* Otoya */
+        .otoya.visible .char-bg { background-image: url('futbol/imagenes/OTOYA.png'); }
+        .otoya:hover { box-shadow: 0 0 30px rgba(50, 205, 50, 0.3); }
+        .otoya:hover .char-name { color: var(--otoya-color); }
+        .otoya:hover .char-info { border-left-color: var(--otoya-color); }
+
+        /* Yukimiya */
+        .yukimiya.visible .char-bg { background-image: url('futbol/imagenes/YUKIMIYA.png'); }
+        .yukimiya:hover { box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+        .yukimiya:hover .char-name { color: var(--yukimiya-color); }
+        .yukimiya:hover .char-info { border-left-color: var(--yukimiya-color); }
+
+        /* Sae */
+        .sae.visible .char-bg { background-image: url('futbol/imagenes/SAE.png'); }
+        .sae:hover { box-shadow: 0 0 30px rgba(128, 0, 0, 0.4); }
+        .sae:hover .char-name { color: var(--sae-color); }
+        .sae:hover .char-info { border-left-color: var(--sae-color); }
+
+        /* Aiku */
+        .aiku.visible .char-bg { background-image: url('futbol/imagenes/AIKU.png'); }
+        .aiku:hover { box-shadow: 0 0 30px rgba(128, 128, 0, 0.3); }
+        .aiku:hover .char-name { color: var(--aiku-color); }
+        .aiku:hover .char-info { border-left-color: var(--aiku-color); }
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        .fade-in { animation: fadeInUp 0.8s ease backwards; }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(50px); } to { opacity:1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; letter-spacing: 2px; }
+            .character-grid { grid-template-columns: 1fr; width: 85%; }
+            .char-card { height: 400px; clip-path: none; border-radius: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+
+    <audio id="bg-music" loop autoplay>
+        <source src="futbol.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="hover-sound" preload="auto">
+        <source src="seleccion.mp3" type="audio/mpeg">
+    </audio>
+
+    <a href="index.html" class="back-btn">⬅ Volver a la Página Principal</a>
+
+    <header>
+        <h1>BLUE LOCK</h1>
+        <div class="subtitle">Destruye tu realidad. Conviértete en el mejor.</div>
+    </header>
+
+    <div class="character-grid">
+
+        <a href="futbol/Isagi.html" class="char-card isagi fade-in" style="animation-delay: 0.1s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Bastard München</span>
+                <div class="char-name">Yoichi<br>Isagi</div>
+                <div class="char-weapon">Metavisión / Adaptabilidad</div>
+            </div>
+        </a>
+
+        <a href="futbol/Bachira.html" class="char-card bachira fade-in" style="animation-delay: 0.15s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">FC Barcha</span>
+                <div class="char-name">Meguru<br>Bachira</div>
+                <div class="char-weapon">Dribbling Monstruoso</div>
+            </div>
+        </a>
+
+        <a href="futbol/Chigiri.html" class="char-card chigiri fade-in" style="animation-delay: 0.2s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Manshine City</span>
+                <div class="char-name">Hyoma<br>Chigiri</div>
+                <div class="char-weapon">Velocidad / 44 Panther</div>
+            </div>
+        </a>
+
+        <a href="futbol/Kunigami.html" class="char-card kunigami fade-in" style="animation-delay: 0.25s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Bastard München</span>
+                <div class="char-name">Rensuke<br>Kunigami</div>
+                <div class="char-weapon">Wild Card / Disparo Zurdo</div>
+            </div>
+        </a>
+        
+        <a href="futbol/Gagamaru.html" class="char-card gagamaru fade-in" style="animation-delay: 0.3s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Bastard München (GK)</span>
+                <div class="char-name">Gin<br>Gagamaru</div>
+                <div class="char-weapon">Reflejos Salvajes</div>
+            </div>
+        </a>
+
+        <a href="futbol/Nagi.html" class="char-card nagi fade-in" style="animation-delay: 0.35s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Manshine City</span>
+                <div class="char-name">Seishiro<br>Nagi</div>
+                <div class="char-weapon">Control Absoluto / Genio</div>
+            </div>
+        </a>
+
+        <a href="futbol/Reo.html" class="char-card reo fade-in" style="animation-delay: 0.4s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Manshine City</span>
+                <div class="char-name">Reo<br>Mikage</div>
+                <div class="char-weapon">Camaleón / Copia</div>
+            </div>
+        </a>
+
+        <a href="futbol/Barou.html" class="char-card barou fade-in" style="animation-delay: 0.45s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Ubers</span>
+                <div class="char-name">Shoei<br>Barou</div>
+                <div class="char-weapon">Predator Eye / Carga</div>
+            </div>
+        </a>
+
+        <a href="futbol/Niko.html" class="char-card niko fade-in" style="animation-delay: 0.5s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Ubers</span>
+                <div class="char-name">Ikki<br>Niko</div>
+                <div class="char-weapon">Visión Watchtower</div>
+            </div>
+        </a>
+
+        <a href="futbol/Rin.html" class="char-card rin fade-in" style="animation-delay: 0.55s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">PXG</span>
+                <div class="char-name">Rin<br>Itoshi</div>
+                <div class="char-weapon">Puppeteer / Destrucción</div>
+            </div>
+        </a>
+
+        <a href="futbol/Shidou.html" class="char-card shidou fade-in" style="animation-delay: 0.6s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">PXG</span>
+                <div class="char-name">Ryusei<br>Shidou</div>
+                <div class="char-weapon">Instinto Espacial / Drive</div>
+            </div>
+        </a>
+
+        <a href="futbol/Karasu.html" class="char-card karasu fade-in" style="animation-delay: 0.65s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">PXG</span>
+                <div class="char-name">Tabito<br>Karasu</div>
+                <div class="char-weapon">Analítico / Ball Keeping</div>
+            </div>
+        </a>
+
+        <a href="futbol/Otoya.html" class="char-card otoya fade-in" style="animation-delay: 0.7s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">FC Barcha</span>
+                <div class="char-name">Eita<br>Otoya</div>
+                <div class="char-weapon">Sigilo / Ninja</div>
+            </div>
+        </a>
+
+        <a href="futbol/Yukimiya.html" class="char-card yukimiya fade-in" style="animation-delay: 0.75s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Bastard München</span>
+                <div class="char-name">Kenyu<br>Yukimiya</div>
+                <div class="char-weapon">1v1 / Gyro Shot</div>
+            </div>
+        </a>
+        
+        <a href="futbol/Sae.html" class="char-card sae fade-in" style="animation-delay: 0.8s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">New Gen 11 / Real Madrid</span>
+                <div class="char-name">Sae<br>Itoshi</div>
+                <div class="char-weapon">Cálculo Perfecto</div>
+            </div>
+        </a>
+
+        <a href="futbol/Aiku.html" class="char-card aiku fade-in" style="animation-delay: 0.85s;">
+            <div class="char-bg"></div>
+            <div class="char-overlay"></div>
+            <div class="char-info">
+                <span class="rank-badge">Ubers (U-20 Captain)</span>
+                <div class="char-name">Oliver<br>Aiku</div>
+                <div class="char-weapon">Defensa Total</div>
+            </div>
+        </a>
+
+    </div>
+
+    <script>
+        // Efecto de movimiento sutil del fondo (Parallax tecnológico)
+        const bg = document.querySelector('.bg-mesh');
+
+        document.addEventListener('mousemove', function(e) {
+            if (bg) {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                // Movimiento opuesto para efecto profundidad
+                bg.style.backgroundPosition = `${x * 40}px ${y * 40}px`;
+            }
+        });
+
+        /* --- LÓGICA DE AUDIO --- */
+        const bgMusic = document.getElementById('bg-music');
+        const hoverSound = document.getElementById('hover-sound');
+        const cards = document.querySelectorAll('.char-card');
+
+        if (bgMusic) bgMusic.volume = 0.5;   
+        if (hoverSound) hoverSound.volume = 0.4; 
+
+        function playMusic() {
+            if (bgMusic) {
+                bgMusic.play().then(() => {
+                    document.removeEventListener('click', playMusic);
+                }).catch(error => {
+                    console.log("Esperando interacción del usuario para iniciar música...");
+                });
+            }
+        }
+
+        // Intentar reproducir inmediatamente
+        playMusic();
+        
+        // Si falla, reproducir al primer clic
+        document.addEventListener('click', playMusic);
+
+        // Efecto de sonido al pasar el mouse (Hover)
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                if (hoverSound) {
+                    hoverSound.currentTime = 0; 
+                    hoverSound.play().catch(e => console.log("Audio hover pendiente de interacción"));
+                }
+            });
+        });
+
+        // --- OPTIMIZACIÓN DE IMÁGENES (LAZY LOADING) ---
+        // Este código detecta cuándo una carta entra en la pantalla y carga su imagen solo entonces.
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        card.classList.add('visible'); // Activa el CSS para cargar la imagen
+                        observer.unobserve(card); // Deja de observar (ya se cargó)
+                    }
+                });
+            }, { rootMargin: "200px" }); // Carga 200px antes de llegar a la tarjeta
+
+            document.querySelectorAll('.char-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

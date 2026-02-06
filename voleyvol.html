@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volleyball Elite - Selección de Entrenamiento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CONFIGURACIÓN GENERAL --- */
+        :root {
+            --dark-bg: #0a0a0a;
+            --text-color: #ffffff;
+            
+            /* --- COLORES DE PERSONAJES --- */
+            /* Karasuno */
+            --hinata-color: #FF6600;    /* Naranja */
+            --kageyama-color: #FFA500;  /* Dorado Naranja */
+            --nishinoya-color: #FF8C00; /* Naranja Oscuro */
+            --tsukishima-color: #F0E68C;/* Amarillo Luna Pálido */
+            --yamaguchi-color: #32CD32; /* Verde (Saque Flotante) */
+            
+            /* Aoba Johsai */
+            --oikawa-color: #40E0D0;    /* Turquesa */
+            
+            /* Nekoma */
+            --nekoma-red: #DC143C;      /* Rojo Carmesí */
+            
+            /* Fukurodani */
+            --bokuto-gold: #FFD700;     /* Dorado Búho */
+            
+            /* Shiratorizawa */
+            --ushijima-purple: #8A2BE2; /* Púrpura Intenso */
+            --tendo-pink: #C71585;      /* Rosa/Rojo oscuro */
+            
+            /* Inarizaki */
+            --atsumu-maroon: #800000;   /* Granate */
+            --osamu-grey: #A9A9A9;      /* Gris */
+            
+            --font-title: 'Teko', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- FONDO ANIMADO --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
+                repeating-linear-gradient(0deg, transparent, transparent 1px, #111 1px, #111 2px);
+            z-index: -1;
+            background-size: 100% 4px;
+        }
+
+        /* --- BOTÓN VOLVER (Fixed Top Left) --- */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            text-decoration: none;
+            color: #fff;
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+        .back-btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: translateX(5px);
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-top: 8vh;
+            margin-bottom: 5vh;
+            padding: 0 20px;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 5rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            line-height: 1;
+            background: linear-gradient(90deg, #fff, #999, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        /* --- GRID DE PERSONAJES --- */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 95%;
+            max-width: 1600px; /* Más ancho para que quepan todos */
+            padding-bottom: 80px;
+        }
+
+        /* --- TARJETA DE PERSONAJE (Base) --- */
+        .char-card {
+            position: relative;
+            height: 400px; /* Un poco más compactas */
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid #333;
+            background: #111;
+            text-decoration: none;
+            display: block;
+            
+            /* OPTIMIZACIÓN DE RENDERIZADO */
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 400px;
+        }
+
+        .char-bg {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            filter: grayscale(100%) brightness(0.6);
+        }
+
+        .char-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 80%;
+            background: linear-gradient(to top, rgba(0,0,0,1), transparent);
+            z-index: 1;
+        }
+
+        .char-info {
+            position: absolute; bottom: 25px; left: 25px; z-index: 2;
+        }
+
+        .school-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.1);
+            display: inline-block;
+            margin-bottom: 8px;
+            border-left: 3px solid #fff;
+            transition: all 0.3s ease;
+        }
+
+        .char-name {
+            font-family: var(--font-title);
+            font-size: 2.8rem;
+            line-height: 0.9;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .char-role {
+            font-size: 0.9rem;
+            color: #ccc;
+            font-style: italic;
+        }
+
+        /* --- HOVER EFFECTS Y LAZY LOADING (POR PERSONAJE) --- */
+        .char-card:hover .char-bg { filter: grayscale(0%) brightness(1); transform: scale(1.1); }
+        .char-card:hover { transform: translateY(-10px); z-index: 10; }
+
+        /* Karasuno */
+        .hinata.visible .char-bg { background-image: url('voleybol/imagenes/HINATA.png'); }
+        .hinata:hover { border-color: var(--hinata-color); box-shadow: 0 0 25px var(--hinata-color); }
+        .hinata:hover .char-name, .hinata:hover .school-badge { color: var(--hinata-color); border-color: var(--hinata-color); }
+
+        .kageyama.visible .char-bg { background-image: url('voleybol/imagenes/KAGEYAMA.png'); }
+        .kageyama:hover { border-color: var(--kageyama-color); box-shadow: 0 0 25px var(--kageyama-color); }
+        .kageyama:hover .char-name, .kageyama:hover .school-badge { color: var(--kageyama-color); border-color: var(--kageyama-color); }
+
+        .nishinoya.visible .char-bg { background-image: url('voleybol/imagenes/NISHINOYA.png'); }
+        .nishinoya:hover { border-color: var(--nishinoya-color); box-shadow: 0 0 25px var(--nishinoya-color); }
+        .nishinoya:hover .char-name, .nishinoya:hover .school-badge { color: var(--nishinoya-color); border-color: var(--nishinoya-color); }
+        
+        .tsukishima.visible .char-bg { background-image: url('voleybol/imagenes/TSUKISHIMA.png'); }
+        .tsukishima:hover { border-color: var(--tsukishima-color); box-shadow: 0 0 25px var(--tsukishima-color); }
+        .tsukishima:hover .char-name, .tsukishima:hover .school-badge { color: var(--tsukishima-color); border-color: var(--tsukishima-color); }
+
+        .yamaguchi.visible .char-bg { background-image: url('voleybol/imagenes/TADASHI.png'); }
+        .yamaguchi:hover { border-color: var(--yamaguchi-color); box-shadow: 0 0 25px var(--yamaguchi-color); }
+        .yamaguchi:hover .char-name, .yamaguchi:hover .school-badge { color: var(--yamaguchi-color); border-color: var(--yamaguchi-color); }
+
+        /* Seijoh */
+        .oikawa.visible .char-bg { background-image: url('voleybol/imagenes/OIKAWA.png'); }
+        .oikawa:hover { border-color: var(--oikawa-color); box-shadow: 0 0 25px var(--oikawa-color); }
+        .oikawa:hover .char-name, .oikawa:hover .school-badge { color: var(--oikawa-color); border-color: var(--oikawa-color); }
+
+        /* Nekoma */
+        .kuroo.visible .char-bg { background-image: url('voleybol/imagenes/KUROO.png'); }
+        .kuroo:hover { border-color: var(--nekoma-red); box-shadow: 0 0 25px var(--nekoma-red); }
+        .kuroo:hover .char-name, .kuroo:hover .school-badge { color: var(--nekoma-red); border-color: var(--nekoma-red); }
+
+        .kenma.visible .char-bg { background-image: url('voleybol/imagenes/KENMA.png'); }
+        .kenma:hover { border-color: var(--nekoma-red); box-shadow: 0 0 25px var(--nekoma-red); }
+        .kenma:hover .char-name, .kenma:hover .school-badge { color: var(--nekoma-red); border-color: var(--nekoma-red); }
+
+        /* Fukurodani */
+        .bokuto.visible .char-bg { background-image: url('voleybol/imagenes/BOKUTO.png'); }
+        .bokuto:hover { border-color: var(--bokuto-gold); box-shadow: 0 0 25px var(--bokuto-gold); }
+        .bokuto:hover .char-name, .bokuto:hover .school-badge { color: var(--bokuto-gold); border-color: var(--bokuto-gold); }
+
+        /* Shiratorizawa */
+        .ushijima.visible .char-bg { background-image: url('voleybol/imagenes/USHIJIMA.png'); }
+        .ushijima:hover { border-color: var(--ushijima-purple); box-shadow: 0 0 25px var(--ushijima-purple); }
+        .ushijima:hover .char-name, .ushijima:hover .school-badge { color: var(--ushijima-purple); border-color: var(--ushijima-purple); }
+
+        .tendo.visible .char-bg { background-image: url('voleybol/imagenes/TENDO.png'); }
+        .tendo:hover { border-color: var(--tendo-pink); box-shadow: 0 0 25px var(--tendo-pink); }
+        .tendo:hover .char-name, .tendo:hover .school-badge { color: var(--tendo-pink); border-color: var(--tendo-pink); }
+
+        /* Inarizaki */
+        .atsumu.visible .char-bg { background-image: url('voleybol/imagenes/ATSUMU.png'); }
+        .atsumu:hover { border-color: var(--atsumu-maroon); box-shadow: 0 0 25px var(--atsumu-maroon); }
+        .atsumu:hover .char-name, .atsumu:hover .school-badge { color: var(--atsumu-maroon); border-color: var(--atsumu-maroon); }
+
+        .osamu.visible .char-bg { background-image: url('voleybol/imagenes/OSAMU.png'); }
+        .osamu:hover { border-color: var(--osamu-grey); box-shadow: 0 0 25px var(--osamu-grey); }
+        .osamu:hover .char-name, .osamu:hover .school-badge { color: var(--osamu-grey); border-color: var(--osamu-grey); }
+
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+        .fade-in { animation: fadeInUp 0.8s ease backwards; }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .character-grid { grid-template-columns: 1fr; width: 90%; }
+            .char-card { height: 350px; }
+            .back-btn { font-size: 0.9rem; padding: 8px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-mesh"></div>
+
+    <audio id="bg-music" loop autoplay>
+        <source src="voleybol.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="hover-sound" preload="auto">
+        <source src="seleccion.mp3" type="audio/mpeg">
+    </audio>
+
+    <a href="index.html" class="back-btn">⬅ Volver a la Página Principal</a>
+
+    <header>
+        <h1>ELITE VOLLEYBALL</h1>
+        <div class="subtitle">Selecciona tu protocolo de entrenamiento</div>
+    </header>
+
+    <div class="character-grid">
+
+        <a href="voleybol/Hinata.html" class="char-card hinata fade-in" style="animation-delay: 0.05s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Karasuno</div><div class="char-name">Shoyo<br>Hinata</div><div class="char-role">Bloqueador Central</div></div>
+        </a>
+
+        <a href="voleybol/Kageyama.html" class="char-card kageyama fade-in" style="animation-delay: 0.1s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Karasuno</div><div class="char-name">Tobio<br>Kageyama</div><div class="char-role">Armador</div></div>
+        </a>
+
+        <a href="voleybol/Nishinoya.html" class="char-card nishinoya fade-in" style="animation-delay: 0.15s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Karasuno</div><div class="char-name">Yu<br>Nishinoya</div><div class="char-role">Líbero</div></div>
+        </a>
+
+        <a href="voleybol/Tsukishima.html" class="char-card tsukishima fade-in" style="animation-delay: 0.2s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Karasuno</div><div class="char-name">Kei<br>Tsukishima</div><div class="char-role">Bloqueador</div></div>
+        </a>
+        
+        <a href="voleybol/Tadashi.html" class="char-card yamaguchi fade-in" style="animation-delay: 0.25s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Karasuno</div><div class="char-name">Tadashi<br>Yamaguchi</div><div class="char-role">Servidor Pinch</div></div>
+        </a>
+
+        <a href="voleybol/Oikawa.html" class="char-card oikawa fade-in" style="animation-delay: 0.3s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Aoba Johsai</div><div class="char-name">Toru<br>Oikawa</div><div class="char-role">Capitán / Armador</div></div>
+        </a>
+
+        <a href="voleybol/Kuroo.html" class="char-card kuroo fade-in" style="animation-delay: 0.35s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Nekoma High</div><div class="char-name">Tetsuro<br>Kuroo</div><div class="char-role">Capitán / Bloqueador</div></div>
+        </a>
+
+        <a href="voleybol/Kenma.html" class="char-card kenma fade-in" style="animation-delay: 0.4s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Nekoma High</div><div class="char-name">Kenma<br>Kozume</div><div class="char-role">Cerebro / Armador</div></div>
+        </a>
+
+        <a href="voleybol/Bokuto.html" class="char-card bokuto fade-in" style="animation-delay: 0.45s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Fukurodani</div><div class="char-name">Kotaro<br>Bokuto</div><div class="char-role">As / Estrella</div></div>
+        </a>
+
+        <a href="voleybol/Ushijima.html" class="char-card ushijima fade-in" style="animation-delay: 0.5s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Shiratorizawa</div><div class="char-name">Wakatoshi<br>Ushijima</div><div class="char-role">Super As</div></div>
+        </a>
+
+        <a href="voleybol/Tendo.html" class="char-card tendo fade-in" style="animation-delay: 0.55s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Shiratorizawa</div><div class="char-name">Satori<br>Tendo</div><div class="char-role">Guess Monster</div></div>
+        </a>
+
+        <a href="voleybol/Atsumu.html" class="char-card atsumu fade-in" style="animation-delay: 0.6s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Inarizaki</div><div class="char-name">Atsumu<br>Miya</div><div class="char-role">Armador (Dual)</div></div>
+        </a>
+
+        <a href="voleybol/Osamu.html" class="char-card osamu fade-in" style="animation-delay: 0.65s;">
+            <div class="char-bg"></div><div class="char-overlay"></div>
+            <div class="char-info"><div class="school-badge">Inarizaki</div><div class="char-name">Osamu<br>Miya</div><div class="char-role">Opuesto (Dual)</div></div>
+        </a>
+
+    </div>
+
+    <script>
+        // --- LÓGICA DE AUDIO DE FONDO ---
+        function tryPlayAudio() {
+            const audio = document.getElementById('bg-music');
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Esperando interacción para reproducir música de fondo..."));
+            }
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            tryPlayAudio();
+            const bg = document.querySelector('.bg-mesh');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            bg.style.backgroundPosition = `${x * 15}px ${y * 15}px`;
+        });
+
+        document.addEventListener('click', tryPlayAudio);
+
+        // --- LÓGICA DE EFECTO HOVER (Selección) ---
+        const hoverSound = document.getElementById('hover-sound');
+        
+        // Seleccionamos todas las tarjetas y el botón de volver
+        const interactiveElements = document.querySelectorAll('.char-card, .back-btn');
+
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                // Reiniciamos el audio a 0 para que suene completo si pasamos rápido entre tarjetas
+                hoverSound.currentTime = 0;
+                hoverSound.play().catch(e => console.log("Error al reproducir efecto hover:", e));
+            });
+        });
+
+        // --- OPTIMIZACIÓN DE IMÁGENES (LAZY LOADING) ---
+        // Este código detecta cuándo una carta entra en la pantalla y carga su imagen solo entonces.
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        card.classList.add('visible'); // Activa el CSS para cargar la imagen
+                        observer.unobserve(card); // Deja de observar (ya se cargó)
+                    }
+                });
+            }, { rootMargin: "200px" }); // Carga 200px antes de llegar a la tarjeta
+
+            document.querySelectorAll('.char-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

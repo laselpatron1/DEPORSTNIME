@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEPORSTNIME - Inicio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS VISUALES --- */
+        :root {
+            --gold-main: #FFD700;
+            --gold-dark: #B8860B;
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 20, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+        }
+
+        /* --- VERSIÓN --- */
+        .version-tag {
+            position: fixed;
+            bottom: 15px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            z-index: 50;
+            pointer-events: none;
+            letter-spacing: 1px;
+        }
+
+        /* --- FONDO ANIMADO --- */
+        .background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; pointer-events: none; }
+        .floating-item { position: absolute; font-size: 2rem; opacity: 0.3; user-select: none; filter: grayscale(30%) brightness(0.7) blur(1px); animation: floatUp linear infinite; }
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(720deg) scale(1.2); opacity: 0; }
+        }
+
+        /* --- BIENVENIDA --- */
+        .intro-screen { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 10; width: 90%; }
+        .intro-screen.hidden { transform: scale(2); opacity: 0; filter: blur(20px); pointer-events: none; visibility: hidden; }
+        h1 { font-family: 'Teko', sans-serif; font-size: 10vw; line-height: 0.9; text-transform: uppercase; color: var(--gold-main); letter-spacing: 5px; text-align: center; text-shadow: 0 2px 0 #c6a300, 0 4px 0 #b29200, 0 6px 0 #a08200, 0 8px 0 #8d7300, 0 10px 20px rgba(0,0,0,1), 0 0 30px rgba(255, 215, 0, 0.3); animation: titleExplode 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes titleExplode { 0% { opacity: 0; transform: scale(3); letter-spacing: 25px; filter: blur(15px); } 100% { opacity: 1; transform: scale(1); letter-spacing: 5px; filter: blur(0); } }
+        .welcome-text { font-size: 1.2rem; color: white; letter-spacing: 8px; margin-bottom: 15px; font-weight: 300; text-transform: uppercase; text-shadow: 0 0 10px rgba(255,255,255,0.5); animation: fadeIn 2s ease forwards 0.5s; opacity: 0; }
+        .btn-enter { margin-top: 60px; padding: 25px 60px; background: var(--gold-main); color: #000; font-family: 'Teko', sans-serif; font-size: 2.2rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 3px; position: relative; border: none; outline: none; transform: skew(-15deg); box-shadow: 10px 10px 0px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; animation: fadeIn 2s ease forwards 1s; opacity: 0; }
+        .btn-enter span { display: block; transform: skew(15deg); }
+        .btn-enter::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); transition: 0.5s; transform: skew(15deg); }
+        .btn-enter:hover { transform: skew(-15deg) translateY(-5px) scale(1.05); background: #fff; color: #000; box-shadow: 15px 15px 0px var(--gold-dark), 0 0 40px rgba(255, 255, 255, 0.6); }
+        .btn-enter:hover::after { left: 100%; transition: 0.5s ease-in-out; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* --- SELECCIÓN --- */
+        .selection-screen { display: none; grid-template-columns: repeat(2, 1fr); gap: 25px; width: 85%; max-width: 1100px; z-index: 20; text-align: center; padding-top: 20px; }
+        .selection-screen.active { display: grid; animation: fadeInScreen 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .selection-screen.active-instant { display: grid; opacity: 1; transform: none; filter: none; }
+        .mini-logo { grid-column: 1 / -1; font-family: 'Teko', sans-serif; font-size: 4rem; color: var(--gold-main); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; text-shadow: 0 2px 0 #c6a300, 0 4px 0 #b29200, 0 5px 10px rgba(0,0,0,0.8); opacity: 0; transform: translateY(-20px); animation: slideDownTitle 0.8s ease forwards 0.1s; }
+        .selection-title { grid-column: 1 / -1; font-family: 'Teko', sans-serif; font-size: 2.5rem; color: white; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); transform: translateY(-20px); opacity: 0; animation: slideDownTitle 0.8s ease forwards 0.3s; }
+        .selection-screen.active-instant .selection-title, .selection-screen.active-instant .mini-logo { animation: none; opacity: 1; transform: translateY(0); }
+        @keyframes slideDownTitle { to { transform: translateY(0); opacity: 1; } }
+        .selection-title span { color: var(--gold-main); font-weight: bold; }
+
+        /* --- TARJETAS --- */
+        .sport-card { background: var(--card-bg); border: 2px solid rgba(255, 215, 0, 0.1); height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; border-radius: 15px; backdrop-filter: blur(10px); }
+        .sport-card:hover { transform: translateY(-15px) scale(1.02); border-color: var(--gold-main); }
+        .sport-icon { font-size: 4rem; margin-bottom: 15px; transition: all 0.4s; text-shadow: 0 0 15px rgba(255,255,255,0.3); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+        .sport-card:hover .sport-icon { transform: scale(1.3) rotate(15deg); }
+        .sport-title { font-family: 'Teko', sans-serif; font-size: 2.2rem; color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .sport-question { font-size: 0.9rem; color: var(--gold-main); letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
+
+        .card-voley:hover { background: linear-gradient(to top, rgba(255, 140, 0, 0.3), var(--card-bg)); box-shadow: 0 20px 40px rgba(255, 140, 0, 0.2); }
+        .card-futbol:hover { background: linear-gradient(to top, rgba(0, 255, 127, 0.3), var(--card-bg)); box-shadow: 0 20px 40px rgba(0, 255, 127, 0.2); }
+        .card-basket:hover { background: linear-gradient(to top, rgba(255, 40, 40, 0.3), var(--card-bg)); box-shadow: 0 20px 40px rgba(255, 40, 40, 0.2); }
+        .card-calis:hover { background: linear-gradient(to top, rgba(0, 220, 255, 0.3), var(--card-bg)); box-shadow: 0 20px 40px rgba(0, 220, 255, 0.2); }
+
+        @keyframes fadeInScreen { from { opacity: 0; transform: translateY(100px) scale(0.9); filter: blur(10px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+
+        @media (max-width: 768px) {
+            .selection-screen { grid-template-columns: 1fr; width: 90%; gap: 15px; }
+            .mini-logo { font-size: 3rem; }
+            .selection-title { font-size: 1.8rem; line-height: 1.1; margin-bottom: 15px; }
+            .sport-card { height: 110px; flex-direction: row; justify-content: flex-start; padding-left: 25px; }
+            h1 { font-size: 13vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-container" id="bgContainer"></div>
+
+    <div class="version-tag">version:1 Beta</div>
+
+    <div class="intro-screen" id="introScreen">
+        <span class="welcome-text">Bienvenido a</span>
+        <h1>DEPORSTNIME</h1>
+        <button class="btn-enter" onclick="enterDojo()" onmouseenter="playHoverSound()">
+            <span>ENTRENA COMO TU PERSONAJE DE ANIME</span>
+        </button>
+    </div>
+
+    <div class="selection-screen" id="selectionScreen">
+        <h2 class="mini-logo">DEPORSTNIME</h2>
+        <div class="selection-title">
+            ¿QUÉ DISCIPLINA QUIERES <span>ESCOGER</span> PARA <span>MEJORAR</span>?
+        </div>
+
+        <a href="voleyvol.html" class="sport-card card-voley" onmouseenter="playHoverSound()">
+            <div class="sport-icon">🏐</div>
+            <div class="text-group">
+                <div class="sport-question">¿QUIERES JUGAR?</div>
+                <div class="sport-title">VOLEIBOL</div>
+            </div>
+        </a>
+
+        <a href="futbol.html" class="sport-card card-futbol" onmouseenter="playHoverSound()">
+            <div class="sport-icon">⚽</div>
+            <div class="text-group">
+                <div class="sport-question">¿QUIERES JUGAR?</div>
+                <div class="sport-title">FÚTBOL</div>
+            </div>
+        </a>
+
+        <a href="basquetbol.html" class="sport-card card-basket" onmouseenter="playHoverSound()">
+            <div class="sport-icon">🏀</div>
+            <div class="text-group">
+                <div class="sport-question">¿QUIERES JUGAR?</div>
+                <div class="sport-title">BÁSQUET</div>
+            </div>
+        </a>
+
+        <a href="entrenamiento.html" class="sport-card card-calis" onmouseenter="playHoverSound()">
+            <div class="sport-icon">🤸‍♂️</div>
+            <div class="text-group">
+                <div class="sport-question">¿QUÉ CUERPO QUIERES?</div>
+                <div class="sport-title">CONSEGUIR</div>
+            </div>
+        </a>
+    </div>
+
+    <audio id="bgMusic" loop autoplay>
+        <source src="sonido1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="selectSound">
+        <source src="seleccion.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // --- FUNCIONES GENERALES DEL SITIO ---
+        window.onload = function() {
+            const audio = document.getElementById("bgMusic");
+            audio.volume = 0.4;
+            // Intentar autoplay
+            audio.play().catch(() => {
+                document.body.addEventListener('click', () => audio.play(), { once: true });
+            });
+
+            // Verificar si ya entró antes (para saltar intro)
+            if (sessionStorage.getItem('hasEnteredDeporstnime') === 'true') {
+                document.getElementById('introScreen').style.display = 'none';
+                document.getElementById('selectionScreen').classList.add('active-instant');
+            }
+        };
+
+        function enterDojo() {
+            sessionStorage.setItem('hasEnteredDeporstnime', 'true');
+            document.getElementById("bgMusic").play();
+            
+            const s = document.getElementById('selectSound');
+            s.currentTime = 0; s.play();
+
+            document.getElementById('introScreen').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('selectionScreen').classList.add('active');
+            }, 600);
+        }
+
+        function playHoverSound() {
+            const s = document.getElementById('selectSound');
+            s.currentTime = 0; s.volume = 1.0;
+            s.play().catch(() => {});
+        }
+
+        // Fondo animado
+        const bg = document.getElementById('bgContainer');
+        const icons = ['🏐', '🏀', '⚽', '🤸', '⭕', '🏆', '⚡', '🔥'];
+        for (let i = 0; i < 25; i++) {
+            const el = document.createElement('div'); el.classList.add('floating-item');
+            el.innerText = icons[Math.floor(Math.random() * icons.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            const size = Math.random() * 2.5 + 0.5;
+            el.style.fontSize = size + 'rem';
+            el.style.animationDuration = (Math.random() * 15 + 8) + 's';
+            el.style.opacity = (size / 5);
+            bg.appendChild(el);
+        }
+    </script>
+</body>
+</html>
