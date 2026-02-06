@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gin Gagamaru: Wild Guardian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Kanit:ital,wght@0,300;0,600;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES GAGAMARU (WILD KEEPER) --- */
+        :root {
+            --wild-lime: #76FF03;       /* Verde Neón (Instinto/Reflejos) */
+            --wild-dark: #121212;       /* Negro Profundo */
+            --forest-gray: #263238;     /* Gris Oscuro */
+            --bone-white: #f5f5f5;      /* Blanco Hueso */
+            
+            --font-head: 'Anton', sans-serif; /* Impactante y alta */
+            --font-body: 'Kanit', sans-serif; /* Moderna y atlética */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: #0a0a0a;
+            color: var(--bone-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Textura de "ruido" sutil para darle aspecto salvaje/sucio */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* --- FONDO ANIMADO (Chispas de Instinto) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            /* Degradado radial que simula un foco de atención */
+            background: radial-gradient(circle at 50% 30%, #1a1a1a 0%, #000 70%);
+        }
+
+        /* --- BARRA DE PROGRESO (REFLEX GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 8px;
+            background: rgba(255, 255, 255, 0.1); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; 
+            background: var(--wild-lime); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--wild-lime);
+            transition: width 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Movimiento muy rápido/reactivo */
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), #0a0a0a), url('imagenes/GAGAMARU.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 2px solid var(--wild-lime);
+        }
+
+        h1 {
+            font-family: var(--font-head);
+            font-size: 5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--wild-lime);
+            letter-spacing: 2px;
+            text-shadow: 5px 5px 0px rgba(255, 255, 255, 0.1);
+            transform: rotate(-1deg);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: #000;
+            background: var(--wild-lime);
+            padding: 5px 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 15px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-left: 6px solid var(--wild-lime);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            margin-bottom: 40px;
+            backdrop-filter: blur(5px);
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #cfd8dc;
+            line-height: 1.5;
+        }
+        .quote-text strong { 
+            color: var(--wild-lime); 
+            font-family: var(--font-head);
+            font-style: normal;
+            font-size: 1.8rem;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .day-card {
+            background: rgba(118, 255, 3, 0.05);
+            border: 1px solid #333;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.1s; /* Transición instantánea (reflejos) */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            border-color: var(--wild-lime);
+            background: rgba(118, 255, 3, 0.1);
+            transform: scale(1.05);
+        }
+
+        .day-card.completed {
+            background: #1a1a1a;
+            border: 2px solid var(--wild-lime);
+            color: var(--wild-lime);
+        }
+
+        .day-number { 
+            font-family: var(--font-head); 
+            font-size: 2rem; 
+            z-index: 2;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.97); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #121212;
+            border: 1px solid var(--wild-lime);
+            width: 90%; max-width: 500px;
+            padding: 30px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 40px rgba(118, 255, 3, 0.2);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;}
+        .modal-day { font-family: var(--font-head); font-size: 1.8rem; color: #fff; }
+        
+        .modal-title { font-family: var(--font-head); font-size: 2.2rem; color: var(--wild-lime); margin: 0; text-transform: uppercase; line-height: 1; }
+        .modal-desc { line-height: 1.7; color: #b0bec5; font-size: 1.1rem; margin-top: 20px; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 30px;
+            background: var(--wild-lime); border: none; color: #000;
+            font-family: var(--font-head); font-size: 1.3rem; cursor: pointer;
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-action:hover { 
+            background: #fff; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 255, 3, 0.4);
+        }
+
+        .stats {
+            text-align: center; margin-bottom: 25px; 
+            font-family: var(--font-head); color: var(--wild-lime); 
+            font-size: 1.6rem; letter-spacing: 1px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--wild-lime);
+            color: var(--wild-lime);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+        .btn-reset:hover {
+            background: var(--wild-lime);
+            color: #000;
+            box-shadow: 0 0 15px var(--wild-lime);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles" id="bgParticles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>SUPER REACTION</h1>
+        <div class="subtitle">Gagamaru Gin: Wild Guardian</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "No pienso demasiado... mi cuerpo simplemente se mueve." <br>
+                <strong>"LO PARARÉ AUNQUE ME ROMPA."</strong>
+            </p>
+        </div>
+
+        <div class="stats">
+            INSTINTO SALVAJE: <span id="progressText">0</span>%
+            <br>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Instinto</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--wild-lime); cursor: pointer; font-size: 2rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">REACCIONAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (GAGAMARU STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 12 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ENFOCADA EN: FLEXIBILIDAD EXTREMA, REFLEJOS Y SALTOS
+            switch(dayType) {
+                case 1: 
+                    title = "FLEXIBILIDAD DE ESCORPIÓN";
+                    description = `<strong>Objetivo:</strong> Rango de movimiento inhumano.<br><br>• Puente (Back Bridge) mantenido: 4 x 45s<br>• Estiramiento de flexores de cadera profundo<br>• Escorpión dinámico (suelo)<br>• Movilidad de hombros con banda elástica`;
+                    break;
+                case 2: 
+                    title = "REFLEJOS PRIMITIVOS";
+                    description = `<strong>Objetivo:</strong> Reacción sin pensar.<br><br>• Reaction Ball (pelota irregular) contra pared: 10 mins<br>• Atrapadas de pelota de tenis (lanzadas por compañero/máquina)<br>• Sprints desde posición tumbado (boca abajo)<br>• Burpees con reacción visual`;
+                    break;
+                case 3: 
+                    title = "POTENCIA DE SALTO";
+                    description = `<strong>Objetivo:</strong> Alcance aéreo.<br><br>• Saltos de profundidad (Depth Jumps): 4 x 8<br>• Salto vertical máximo con paso previo<br>• Sentadilla búlgara explosiva<br>• Saltos laterales sobre valla (portero)`;
+                    break;
+                case 4: 
+                    title = "ACROBACIA Y CAÍDA";
+                    description = `<strong>Objetivo:</strong> Aterrizar y recuperar.<br><br>• Rollos/Rodadas (Judo rolls) para amortiguar<br>• Handstand (Pino) contra pared: Equilibrio<br>• Plancha lateral con levantamiento de pierna<br>• 'Bear Crawl' (Caminata de oso) rápido`;
+                    break;
+                case 0: 
+                    title = "MODO ZEN SALVAJE";
+                    description = `<strong>Objetivo:</strong> Recuperación natural.<br><br>• Caminata descalzo (Grounding)<br>• Meditación en postura de loto<br>• Baño de agua helada<br>• Comer mucha proteína (carne)`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2.2rem">🦂</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Lime) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: ESCORPIÓN (Su técnica firma)
+            card.innerHTML = `<span class="day-number" style="font-size:2.2rem">🦂</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('gagamaru_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('gagamaru_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de reiniciar tu instinto salvaje? Se borrará todo.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 8 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                
+                // Colores: Verde Lima y Blanco
+                const colors = ['#76FF03', '#FFFFFF', '#CCFF90'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento explosivo radial (Chispas)
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 500,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+        
+        // Efecto ambiental de partículas flotantes (Instinto)
+        const bgContainer = document.getElementById('bgParticles');
+        setInterval(() => {
+            const p = document.createElement('div');
+            p.style.cssText = `
+                position: absolute;
+                width: 2px; height: 2px;
+                background: #76FF03;
+                left: ${Math.random() * 100}vw;
+                top: ${Math.random() * 100}vh;
+                opacity: 0;
+                pointer-events: none;
+            `;
+            bgContainer.appendChild(p);
+            p.animate([
+                { opacity: 0, transform: 'scale(0)' },
+                { opacity: 0.8, transform: 'scale(1.5)' },
+                { opacity: 0, transform: 'scale(0)' }
+            ], {
+                duration: 2000,
+                easing: 'ease-in-out'
+            }).onfinish = () => p.remove();
+        }, 200);
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

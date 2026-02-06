@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Lock: Isagi Yoichi Adaptability</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES BLUE LOCK (ISAGI) --- */
+        :root {
+            --ego-blue: #00e5ff;       /* Azul Neón */
+            --blue-lock: #0033ff;     /* Azul profundo */
+            --metavision-bg: #050a14; /* Fondo casi negro */
+            --puzzle-border: #1a2a44;
+            --white: #ffffff;
+            
+            --font-main: 'Orbitron', sans-serif; /* Futurista para Blue Lock */
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: radial-gradient(circle at center, #0a1020 0%, #000 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Piezas de Puzzle) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(45deg, var(--puzzle-border) 25%, transparent 25%), 
+                linear-gradient(-45deg, var(--puzzle-border) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, var(--puzzle-border) 75%), 
+                linear-gradient(-45deg, transparent 75%, var(--puzzle-border) 75%);
+            background-size: 40px 40px;
+            opacity: 0.1;
+        }
+
+        /* --- BARRA DE PROGRESO (EGO GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(0, 51, 255, 0.2); z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; background: var(--ego-blue); width: 0%;
+            box-shadow: 0 0 15px var(--ego-blue);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to top, #050a14, transparent), url('imagenes/ISAGI.png'); 
+            background-size: cover;
+            background-position: center 20%;
+            z-index: 1;
+            border-bottom: 2px solid var(--ego-blue);
+        }
+
+        h1 {
+            font-family: var(--font-main);
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 4px;
+            color: var(--ego-blue);
+            text-shadow: 0 0 20px var(--blue-lock);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; letter-spacing: 10px; } to { opacity: 1; letter-spacing: 4px; } }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 6px;
+            color: var(--white);
+            background: rgba(0, 51, 255, 0.3);
+            padding: 5px 20px;
+            border: 1px solid var(--ego-blue);
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(5, 10, 20, 0.9);
+            border: 1px solid var(--ego-blue);
+            padding: 40px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
+            margin-bottom: 40px;
+            backdrop-filter: blur(5px);
+        }
+
+        .quote-text {
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: #b0c4de;
+        }
+        .quote-text strong { 
+            color: var(--ego-blue); 
+            font-family: var(--font-main);
+            font-size: 1.8rem;
+            text-transform: uppercase;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .day-card {
+            background: rgba(0, 51, 255, 0.05);
+            border: 1px solid var(--puzzle-border);
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); /* Forma de pieza tecnológica */
+        }
+
+        .day-card:hover {
+            transform: scale(1.05);
+            border-color: var(--ego-blue);
+            background: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 15px var(--blue-lock);
+        }
+
+        .day-card.completed {
+            background: var(--blue-lock);
+            border: 1px solid var(--ego-blue);
+            color: var(--ego-blue);
+        }
+
+        .day-number { 
+            font-family: var(--font-main); 
+            font-size: 1.8rem; 
+            z-index: 2; 
+        }
+
+        /* --- MODAL (METAVISIÓN) --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 10, 20, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #080c14;
+            border: 1px solid var(--ego-blue);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            position: relative; text-align: left;
+            box-shadow: 0 0 50px rgba(0, 51, 255, 0.3);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a2a44; padding-bottom: 10px; }
+        .modal-day { color: var(--ego-blue); font-family: var(--font-main); }
+        
+        .modal-title { font-family: var(--font-main); font-size: 2rem; margin: 0; color: var(--white); text-transform: uppercase; text-shadow: 0 0 10px var(--ego-blue); }
+        .modal-desc { line-height: 1.6; color: #aab; font-size: 1.2rem; margin-top: 20px; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 30px;
+            background: transparent; border: 1px solid var(--ego-blue); color: var(--ego-blue);
+            font-family: var(--font-main); font-size: 1.2rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-action:hover { 
+            background: var(--ego-blue); 
+            color: #000;
+            box-shadow: 0 0 20px var(--ego-blue);
+        }
+
+        .stats {
+            text-align: center; margin-bottom: 25px; 
+            font-family: var(--font-main); color: var(--ego-blue); 
+            font-size: 1.4rem; letter-spacing: 2px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--blue-lock);
+            color: var(--blue-lock);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+        .btn-reset:hover {
+            border-color: var(--ego-blue);
+            color: var(--ego-blue);
+            box-shadow: 0 0 15px rgba(0, 51, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>METAVISIÓN</h1>
+        <div class="subtitle">Isagi Yoichi: Adaptability Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Si quieres ganar, tienes que devorar a todos. <br>
+                <strong>El fútbol es un deporte donde gana el egoísta más grande."</strong>
+            </p>
+        </div>
+
+        <div class="stats">
+            PIEZAS DEL PUZZLE: <span id="progressText">0</span>%
+            <br>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Ego</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--ego-blue); cursor: pointer; font-size: 2rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">DEVORAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (ISAGI STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ENFOCADA EN: INTELIGENCIA ESPACIAL, TIRO DIRECTO, CORE Y ADAPTABILIDAD
+            switch(dayType) {
+                case 1: 
+                    title = "VISIÓN PERIFÉRICA";
+                    description = `<strong>Objetivo:</strong> Escanear el campo.<br><br>• Escaneo cervical constante mientras corres (Mirar hombros)<br>• Pases a objetivos de color (Reacción cognitiva)<br>• Rondo 3vs1 (Anticipación)<br>• Trote con cambios de dirección al silbato`;
+                    break;
+                case 2: 
+                    title = "TIRO DIRECTO (VOLLEA)";
+                    description = `<strong>Objetivo:</strong> Impacto sin control previo.<br><br>• Tiros de primera intención (Pared o compañero): 50 reps<br>• Voleas frontales y laterales<br>• Tiro tras giro de 180º<br>• Definición bajo presión (Sombra)`;
+                    break;
+                case 3: 
+                    title = "MOVIMIENTO SIN BALÓN";
+                    description = `<strong>Objetivo:</strong> Encontrar el punto ciego.<br><br>• Sprints en 'L' y 'V' (Desmarques)<br>• Finta corporal sin tocar balón<br>• Entrar y salir del campo de visión (Conos)<br>• Carrera diagonal a la espalda de la defensa`;
+                    break;
+                case 4: 
+                    title = "ADAPTABILIDAD FÍSICA";
+                    description = `<strong>Objetivo:</strong> Core estable para el choque.<br><br>• Plancha dinámica (con movimientos de brazos)<br>• Sentadilla con salto y giro<br>• Equilibrio a una pierna sobre superficie inestable<br>• Burpees con reacción rápida`;
+                    break;
+                case 0: 
+                    title = "RECONSTRUCCIÓN DEL EGO";
+                    description = `<strong>Objetivo:</strong> Análisis y Puzzle.<br><br>• Ver partido y analizar movimientos de un solo jugador<br>• Visualización: Imagina el gol perfecto<br>• Escribir errores y soluciones (Diario)<br>• Descanso activo (Caminar analizando entorno)`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🧩</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `PIEZA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Puzzle) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: PIEZA DE PUZZLE
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🧩</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('isagi_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('isagi_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de destruir tu fórmula de gol? Se borrará todo.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                
+                // Colores: Azul Neón, Azul Oscuro y Blanco
+                const colors = ['#00e5ff', '#0033ff', '#ffffff'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Forma cuadrada (Piezas digitales)
+                particle.style.borderRadius = '2px';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento digital (rectilíneo)
+                const angle = Math.floor(Math.random() * 4) * (Math.PI / 2); // 0, 90, 180, 270 grados
+                const velocity = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'steps(10)', // Movimiento entrecortado "glitch"
+                }).onfinish = () => particle.remove();
+            }
+        }
+        
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niko Ikki: The Watchtower</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES NIKO (WATCHTOWER) --- */
+        :root {
+            --niko-cyan: #00e5ff;       /* Cian Eléctrico (Sus ojos) */
+            --niko-dark-blue: #0d1b2a;  /* Azul Medianoche */
+            --niko-black: #000000;      /* Oscuridad */
+            --niko-grid: #1b263b;       /* Color de grilla táctica */
+            --white: #e0e1dd;
+            
+            --font-title: 'Orbitron', sans-serif; /* Tecnológico */
+            --font-body: 'Share Tech Mono', monospace; /* Hacker/Datos */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--niko-black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Fondo de rejilla digital */
+            background-image: 
+                linear-gradient(var(--niko-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--niko-grid) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* --- FONDO ANIMADO (Ojos/Escáner) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.1) 0%, transparent 60%);
+            animation: scanRadar 4s infinite linear;
+        }
+
+        @keyframes scanRadar {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+            100% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        /* --- BARRA DE PROGRESO (SYSTEM LOAD) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
+            background: #000; z-index: 1000;
+            border-bottom: 1px solid var(--niko-dark-blue);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: var(--niko-cyan); 
+            width: 0%;
+            box-shadow: 0 0 10px var(--niko-cyan);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(13, 27, 42, 0.8), #000000), url('imagenes/NIKO.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 2px solid var(--niko-cyan);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--niko-cyan);
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--niko-cyan);
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff; }
+            95% { text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff; }
+            96% { text-shadow: -2px 2px #ff00ff, 2px -2px #00ffff; }
+            100% { text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: var(--niko-black);
+            background: var(--niko-cyan);
+            padding: 5px 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            font-family: var(--font-body);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(13, 27, 42, 0.9);
+            border: 1px solid var(--niko-cyan);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            color: #b0bec5;
+            line-height: 1.5;
+        }
+        .quote-text strong { 
+            color: var(--niko-cyan); 
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            display: block;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 5px;
+        }
+
+        .day-card {
+            background: rgba(13, 27, 42, 0.6);
+            border: 1px solid var(--niko-grid);
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--niko-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 10px var(--niko-cyan);
+        }
+
+        .day-card.completed {
+            background: var(--niko-cyan);
+            border-color: var(--white);
+            color: var(--niko-black);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.8rem; 
+        }
+
+        /* --- MODAL (SYSTEM POPUP) --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #050a10;
+            border: 1px solid var(--niko-cyan);
+            width: 90%; max-width: 500px;
+            padding: 35px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.2);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--niko-grid); padding-bottom: 10px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-body); color: var(--niko-cyan); font-size: 1.1rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2rem; color: var(--white); margin: 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.6; color: #cfd8dc; font-size: 1.1rem; margin-top: 20px; font-family: var(--font-body); }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 30px;
+            background: transparent; border: 1px solid var(--niko-cyan); color: var(--niko-cyan);
+            font-family: var(--font-title); font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-action:hover { 
+            background: var(--niko-cyan); 
+            color: var(--niko-black);
+            box-shadow: 0 0 20px var(--niko-cyan);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 30px; 
+        }
+
+        .stats {
+            font-family: var(--font-body); color: var(--niko-cyan); 
+            font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--niko-cyan);
+            color: var(--niko-cyan);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            background: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 10px var(--niko-cyan);
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE WATCHTOWER</h1>
+        <div class="subtitle">Niko Ikki Analysis Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "No necesito ser el más rápido ni el más fuerte. <br>
+                <strong>Solo necesito ver lo que nadie más ve y destruirlos."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                FIELD DATA: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REBOOT SYSTEM</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DATA_LOG_01</span>
+                <span style="color: var(--niko-cyan); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">[X]</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">EXECUTE</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (NIKO STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA: VISIÓN, INTERCEPCIÓN, PASE LARGO, INTELIGENCIA
+            switch(dayType) {
+                case 1: 
+                    title = "VISIÓN DE ÁGUILA";
+                    description = `<strong>Objetivo:</strong> Escaneo constante.<br><br>• Rondo de pases (si estás solo, contra pared con objetivos de color)<br>• Conducción de balón mirando arriba (sin mirar balón)<br>• Trote analizando el entorno (contar objetos)<br>• Análisis de video táctico`;
+                    break;
+                case 2: 
+                    title = "INTERCEPCIÓN SOMBRA";
+                    description = `<strong>Objetivo:</strong> Robar sin falta.<br><br>• Sprints cortos de reacción (3-5 metros)<br>• Pasos laterales defensivos (Jockey)<br>• Anticipación de pase (Lectura de ojos del rival)<br>• Sentadilla isométrica (Base sólida)`;
+                    break;
+                case 3: 
+                    title = "PASE DE FRANCOTIRADOR";
+                    description = `<strong>Objetivo:</strong> Iniciar el contraataque.<br><br>• Pases largos (30-40m) a objetivo fijo<br>• Control y pase rápido (1-2 toques)<br>• Pase filtrado con el exterior<br>• Precisión: Golpear el travesaño`;
+                    break;
+                case 4: 
+                    title = "OCULTACIÓN TÁCTICA";
+                    description = `<strong>Objetivo:</strong> Usar el punto ciego.<br><br>• Movimiento silencioso a la espalda del defensor<br>• Fintas de cuerpo sutiles<br>• Burpees (Resistencia para presionar)<br>• Plancha lateral (Estabilidad)`;
+                    break;
+                case 0: 
+                    title = "RECARGA DE DATOS";
+                    description = `<strong>Objetivo:</strong> Limpiar la mente.<br><br>• Estiramientos oculares (Descansar la vista)<br>• Sueño profundo (Procesar información)<br>• Dieta balanceada para el cerebro<br>• Meditación: Visualizar el campo desde arriba`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Efecto de aparición digital
+                dayDiv.style.animation = `fadeIn 0.5s ease backwards ${i * 0.01}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">👁️</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DATA_LOG_0${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Cian) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: OJO (Watchtower)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">👁️</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('niko_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('niko_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("SYSTEM WARNING: ¿Borrar toda la base de datos?")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '4px'; // Pixeles cuadrados
+                particle.style.height = '4px';
+                
+                // Colores: Cian, Blanco, Azul oscuro
+                const colors = ['#00e5ff', '#ffffff', '#0d1b2a'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Sin borde redondeado (estilo digital)
+                particle.style.borderRadius = '0'; 
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento robótico/recto
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 80 + 30;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 500,
+                    easing: 'steps(5)', // Movimiento a saltos (glitch)
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

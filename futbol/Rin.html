@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itoshi Rin: The Puppet Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Jura:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES ITOSHI RIN (PUPPET MASTER) --- */
+        :root {
+            --rin-teal: #00E6CC;         /* Verde Agua Brillante (Aura) */
+            --rin-dark-teal: #004D40;    /* Verde Oscuro Profundo */
+            --rin-black: #050a0a;        /* Negro casi total */
+            --rin-gray: #37474f;         /* Gris Acero */
+            --lukewarm: #b0bec5;         /* Gris pálido (Tibio) */
+            --white: #ffffff;
+            
+            --font-title: 'Cinzel', serif; /* Elegante pero agresiva */
+            --font-body: 'Jura', sans-serif; /* Técnica y fría */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--rin-black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Fondo de red/hilos de marioneta sutiles */
+            background-image: 
+                linear-gradient(rgba(0, 230, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 230, 204, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* --- FONDO ANIMADO (Flujo Digital/Agua) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at center, rgba(0, 77, 64, 0.2) 0%, transparent 70%);
+            animation: flowWater 10s infinite ease-in-out;
+        }
+
+        @keyframes flowWater { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* --- BARRA DE PROGRESO (CURVE GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 5px;
+            background: #000; z-index: 1000;
+            border-bottom: 1px solid var(--rin-dark-teal);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--rin-dark-teal), var(--rin-teal)); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--rin-teal);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0, 20, 20, 0.7), #050a0a), url('imagenes/RIN.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 2px solid var(--rin-teal);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--rin-teal);
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(0, 230, 204, 0.5);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: var(--rin-black);
+            background: var(--rin-teal);
+            padding: 6px 30px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0, 230, 204, 0.3);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(10, 20, 20, 0.9);
+            border: 1px solid var(--rin-teal);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0, 77, 64, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            color: var(--lukewarm);
+            font-family: var(--font-body);
+            line-height: 1.5;
+        }
+        .quote-text strong { 
+            color: var(--rin-teal); 
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+
+        .day-card {
+            background: rgba(0, 230, 204, 0.03);
+            border: 1px solid var(--rin-gray);
+            height: 95px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--rin-teal);
+            background: rgba(0, 230, 204, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 230, 204, 0.2);
+        }
+
+        .day-card.completed {
+            background: var(--rin-teal);
+            border-color: var(--rin-teal);
+            color: var(--rin-black);
+            font-weight: bold;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.8rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 10, 10, 0.96); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #081010;
+            border: 1px solid var(--rin-teal);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 230, 204, 0.15);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--rin-gray); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-body); color: var(--rin-teal); font-size: 1.1rem; letter-spacing: 2px; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2rem; color: var(--white); margin: 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.7; color: var(--lukewarm); font-size: 1.1rem; margin-top: 25px; font-family: var(--font-body); }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 35px;
+            background: transparent; border: 1px solid var(--rin-teal); color: var(--rin-teal);
+            font-family: var(--font-title); font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-action:hover { 
+            background: var(--rin-teal); 
+            color: var(--rin-black);
+            box-shadow: 0 0 25px var(--rin-teal);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--rin-teal); 
+            font-size: 1.3rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--rin-gray);
+            color: var(--lukewarm);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--rin-teal);
+            color: var(--rin-teal);
+            box-shadow: 0 0 10px rgba(0, 230, 204, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE PUPPET MASTER</h1>
+        <div class="subtitle">Itoshi Rin Precision Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "El campo es mi tablero, y todos son mis marionetas. <br>
+                <strong>Te mataré de la forma más hermosa y horrible posible."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                DESTRUCTION LEVEL: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR JUEGO</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--rin-teal); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">DESTRUIR RIVAL</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (RIN STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: PUPPET MASTER (Precisión, Curva, Visión)
+            switch(dayType) {
+                case 1: 
+                    title = "PRECISIÓN QUIRÚRGICA";
+                    description = `<strong>Objetivo:</strong> Balón donde pone el ojo.<br><br>• Tiros libres (Curva interior): 20 reps desde 25m<br>• Tiros de empeine seco (Potencia): 20 reps<br>• Puntería a travesaño (Crossbar challenge)<br>• Pases largos milimétricos (40m)`;
+                    break;
+                case 2: 
+                    title = "CURVA MORTAL";
+                    description = `<strong>Objetivo:</strong> Trayectorias imposibles.<br><br>• Tiros con efecto exterior (Trivela): 15 reps<br>• Tiros con caída (Dip shot)<br>• Corners olímpicos: 5 intentos por lado<br>• Control orientado + Tiro rápido con efecto`;
+                    break;
+                case 3: 
+                    title = "MANIPULACIÓN DE CAMPO";
+                    description = `<strong>Objetivo:</strong> Control total (Puppeteer).<br><br>• Conducción cambiando de ritmo (Engañar rival)<br>• Rondo solitario (Rebote pared 1 toque)<br>• Análisis de video (Leer patrones rivales)<br>• Visualización: Predecir 3 jugadas adelante`;
+                    break;
+                case 4: 
+                    title = "EQUILIBRIO ABSOLUTO";
+                    description = `<strong>Objetivo:</strong> Disparar desde cualquier posición.<br><br>• Sentadilla a una pierna (Pistol): 4 x 8<br>• Plancha con inestabilidad (Balón medicinal)<br>• Yoga (Flexibilidad para remates acrobáticos)<br>• Voleas en equilibrio precario`;
+                    break;
+                case 0: 
+                    title = "MEDITACIÓN TIBIA";
+                    description = `<strong>Objetivo:</strong> Calma antes de la destrucción.<br><br>• Estiramientos de cadera y espalda (Movilidad)<br>• Baño helado (Mentalidad fría)<br>• Meditación (Matar el ego de los demás)<br>• Sueño reparador`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación de aparición digital
+                dayDiv.style.animation = `fadeIn 0.5s ease backwards ${i * 0.01}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🎯</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Teal) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: DIANA (Precisión)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🎯</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('rin_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('rin_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de destruir el tablero y empezar de cero?")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '4px';
+                particle.style.height = '4px'; // Partículas cuadradas y pequeñas (digitales)
+                particle.style.background = Math.random() > 0.5 ? '#00E6CC' : '#ffffff';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 80 + 40;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'ease-out',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

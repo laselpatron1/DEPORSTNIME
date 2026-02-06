@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oliver Aiku: The Iron Shield</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES AIKU (U-20 CAPTAIN) --- */
+        :root {
+            --aiku-gold: #c7a008;       /* Oro Antiguo (Liderazgo) */
+            --aiku-teal: #00897b;       /* Verde Azulado (Ojos/Aura) */
+            --aiku-dark-blue: #0a1422;  /* Azul Marino Profundo (Uniforme U20) */
+            --aiku-metal: #37474f;      /* Gris Metálico */
+            --white: #e0e0e0;
+            
+            --font-title: 'Oswald', sans-serif; /* Fuerte y madura */
+            --font-body: 'Montserrat', sans-serif; /* Clara y táctica */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--aiku-dark-blue);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Fondo de estructura defensiva/metálica sutil */
+            background-image: 
+                linear-gradient(30deg, var(--aiku-metal) 1px, transparent 1px),
+                linear-gradient(150deg, var(--aiku-metal) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-opacity: 0.1;
+        }
+
+        /* --- FONDO ANIMADO (Aura Defensiva/Flow) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            /* Degradado que combina el oro y el teal de su "Flow" */
+            background: radial-gradient(circle at bottom center, rgba(199, 160, 8, 0.15) 0%, rgba(0, 137, 123, 0.05) 50%, transparent 80%);
+            animation: shieldPulse 5s infinite ease-in-out;
+        }
+
+        @keyframes shieldPulse {
+            0% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+            100% { opacity: 0.4; transform: scale(1); }
+        }
+
+        /* --- BARRA DE PROGRESO (DEFENSIVE FLOW) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 6px;
+            background: #050a10; z-index: 1000;
+            border-bottom: 1px solid var(--aiku-teal);
+        }
+        .progress-bar {
+            height: 100%; 
+            /* Degradado de sus dos colores principales */
+            background: linear-gradient(90deg, var(--aiku-teal), var(--aiku-gold)); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--aiku-gold);
+            transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(10, 20, 34, 0.8), rgba(5, 10, 16, 1)), url('imagenes/AIKU.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 3px solid var(--aiku-gold);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--aiku-gold);
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(0, 137, 123, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: var(--aiku-dark-blue);
+            background: linear-gradient(90deg, var(--aiku-teal), var(--aiku-gold));
+            padding: 8px 30px;
+            font-weight: 700;
+            margin-top: 15px;
+            text-transform: uppercase;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); /* Forma de placa */
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 30, 45, 0.9);
+            border-left: 4px solid var(--aiku-gold);
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            color: #ccc;
+            font-family: var(--font-body);
+            line-height: 1.5;
+        }
+        .quote-text strong { 
+            color: var(--aiku-gold); 
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .day-card {
+            background: rgba(199, 160, 8, 0.05);
+            border: 1px solid var(--aiku-metal);
+            height: 95px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            background: rgba(0, 137, 123, 0.2);
+            border-color: var(--aiku-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(199, 160, 8, 0.3);
+        }
+
+        .day-card.completed {
+            background: linear-gradient(135deg, var(--aiku-teal), var(--aiku-gold));
+            border-color: var(--aiku-gold);
+            color: var(--aiku-dark-blue);
+            font-weight: bold;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.7rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 10, 16, 0.97); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #0c1420;
+            border: 2px solid var(--aiku-gold);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 50px rgba(199, 160, 8, 0.2);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--aiku-metal); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-title); color: var(--aiku-teal); font-size: 1.1rem; letter-spacing: 1px; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--aiku-gold); margin: 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.7; color: #b0bec5; font-size: 1.1rem; margin-top: 25px; font-family: var(--font-body); }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 35px;
+            background: transparent; border: 2px solid var(--aiku-gold); color: var(--aiku-gold);
+            font-family: var(--font-title); font-size: 1.2rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-action:hover { 
+            background: var(--aiku-gold); 
+            color: var(--aiku-dark-blue);
+            box-shadow: 0 0 25px var(--aiku-gold);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--aiku-gold); 
+            font-size: 1.3rem; letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--aiku-metal);
+            color: var(--aiku-metal);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--aiku-gold);
+            color: var(--aiku-gold);
+            box-shadow: 0 0 10px rgba(199, 160, 8, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE IRON SHIELD</h1>
+        <div class="subtitle">Oliver Aiku: Total Defense Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Defender no es solo reaccionar. Es leer el futuro y aplastar sus esperanzas antes de que empiecen. <br>
+                <strong>Yo seré el muro que no podréis cruzar."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                DEFENSIVE FLOW: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Progreso</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--aiku-gold); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">BLOQUEAR OBJETIVO</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (AIKU STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA: DEFENSA FÍSICA, LECTURA DE JUEGO, JUEGO AÉREO, LIDERAZGO
+            switch(dayType) {
+                case 1: 
+                    title = "CUERPO DE HIERRO (FÍSICO)";
+                    description = `<strong>Objetivo:</strong> Dominio en el contacto.<br><br>• Carga de hombro (Shoulder charge) controlada<br>• Sentadilla frontal (Fuerza de base)<br>• Plancha con peso (Core inamovible): 4 x 1min<br>• Protección de balón de espaldas (Shielding)`;
+                    break;
+                case 2: 
+                    title = "LECTURA DEL FLOW (VISIÓN)";
+                    description = `<strong>Objetivo:</strong> Anticipar el pase clave.<br><br>• Ejercicios de intercepción (Cortar líneas de pase)<br>• Análisis de lenguaje corporal del rival<br>• Reacción a estímulos visuales rápidos<br>• Posicionamiento táctico (Cubrir espacios)`;
+                    break;
+                case 3: 
+                    title = "DOMINIO AÉREO";
+                    description = `<strong>Objetivo:</strong> Ganar cada balón dividido arriba.<br><br>• Salto vertical máximo con cabeceo<br>• Timing de salto (Saltar antes que el rival)<br>• Despejes de cabeza con dirección y potencia<br>• Box jumps pliométricos`;
+                    break;
+                case 4: 
+                    title = "1VS1 LOCKDOWN";
+                    description = `<strong>Objetivo:</strong> Anular al delantero.<br><br>• Defensa en "Jockey" (Retroceder sin perder balance)<br>• Entrada a ras de suelo (Tackle deslizante preciso)<br>• Bloqueo de disparos (Poner el cuerpo)<br>• Canalizar al rival hacia la banda`;
+                    break;
+                case 0: 
+                    title = "MENTALIDAD DE CAPITÁN";
+                    description = `<strong>Objetivo:</strong> Liderazgo y recuperación.<br><br>• Estudio de video (Analizar estructuras rivales)<br>• Comunicación en el campo (Gritos de mando)<br>• Recuperación activa (Natación o bici suave)<br>• Visualización: Mantener la calma bajo presión`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = ''; // Limpiar para regenerar si es necesario
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación de pulso defensivo
+                dayDiv.style.animation = `shieldPulse 3s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${Math.random() * 2}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+                
+                // Marcar si ya está completado al cargar
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🛡️</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `PROTOCOLO DEFENSIVO: DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Oro/Teal) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: ESCUDO (Defensa)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🛡️</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            // Guardamos el array de días completados
+            localStorage.setItem('aiku_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('aiku_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            // Generar grid y actualizar barra con los datos cargados
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de reiniciar tu Protocolo Defensivo? Se borrará todo el progreso.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 8 + 4 + 'px';
+                particle.style.height = particle.style.width;
+                
+                // Colores: Oro, Teal, Blanco
+                const colors = ['#c7a008', '#00897b', '#e0e0e0'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Forma de rombo/escudo
+                particle.style.transform = 'rotate(45deg)';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento sólido y expansivo
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 80 + 30;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) rotate(45deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(45deg) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 700,
+                    easing: 'ease-out',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

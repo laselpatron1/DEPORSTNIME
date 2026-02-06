@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sae Itoshi: The Prodigy Protocol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES SAE (BEAUTIFUL DESTRUCTION) --- */
+        :root {
+            --sae-burgundy: #800020;    /* Rojo Vino (Elegancia/Sangre fría) */
+            --sae-gold: #c5a059;        /* Oro Pálido (Clase Mundial) */
+            --sae-black: #080808;       /* Negro Mate */
+            --sae-gray: #1f1f1f;        /* Gris Sofisticado */
+            --white: #f0f0f0;
+            
+            --font-title: 'Playfair Display', serif; /* Elegante/Realeza */
+            --font-body: 'Lato', sans-serif; /* Limpio/Técnico */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--sae-black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Textura de lujo sutil */
+            background-image: 
+                linear-gradient(45deg, rgba(128, 0, 32, 0.05) 25%, transparent 25%), 
+                linear-gradient(-45deg, rgba(128, 0, 32, 0.05) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, rgba(128, 0, 32, 0.05) 75%), 
+                linear-gradient(-45deg, transparent 75%, rgba(128, 0, 32, 0.05) 75%);
+            background-size: 40px 40px;
+        }
+
+        /* --- FONDO ANIMADO (Pétalos/Datos) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(197, 160, 89, 0.1) 0%, transparent 80%);
+            animation: elegancePulse 8s infinite ease-in-out;
+        }
+
+        @keyframes elegancePulse { 0% { opacity: 0.5; } 50% { opacity: 0.8; } 100% { opacity: 0.5; } }
+
+        /* --- BARRA DE PROGRESO (VALUE GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
+            background: #000; z-index: 1000;
+            border-bottom: 1px solid var(--sae-gold);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--sae-burgundy), var(--sae-gold)); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--sae-burgundy);
+            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--sae-black)), url('imagenes/SAE.png'); 
+            background-size: cover;
+            background-position: center 30%;
+            z-index: 1;
+            border-bottom: 1px solid var(--sae-burgundy);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--sae-gold);
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(128, 0, 32, 0.6);
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--white);
+            background: rgba(128, 0, 32, 0.8);
+            padding: 8px 30px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-weight: 300;
+            border: 1px solid var(--sae-gold);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(15, 15, 15, 0.95);
+            border-top: 3px solid var(--sae-gold);
+            border-bottom: 3px solid var(--sae-burgundy);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #dcdcdc;
+            line-height: 1.6;
+            font-family: var(--font-title);
+        }
+        .quote-text strong { 
+            color: var(--sae-burgundy); 
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .day-card {
+            background: rgba(128, 0, 32, 0.05);
+            border: 1px solid var(--sae-gray);
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--sae-gold);
+            background: rgba(197, 160, 89, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(128, 0, 32, 0.2);
+        }
+
+        .day-card.completed {
+            background: var(--sae-burgundy);
+            border-color: var(--sae-gold);
+            color: var(--sae-gold);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.8rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(8, 8, 8, 0.98); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #0c0c0c;
+            border: 1px solid var(--sae-gold);
+            width: 90%; max-width: 500px;
+            padding: 50px; 
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 60px rgba(197, 160, 89, 0.1);
+        }
+
+        .modal-header { margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .modal-day { font-family: var(--font-title); color: var(--sae-burgundy); font-size: 1.3rem; font-style: italic;}
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--white); margin: 10px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-desc { line-height: 1.8; color: #aaa; font-size: 1.1rem; margin-top: 20px; text-align: left; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 40px;
+            background: transparent; border: 1px solid var(--sae-gold); color: var(--sae-gold);
+            font-family: var(--font-body); font-size: 1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px;
+        }
+        .btn-action:hover { 
+            background: var(--sae-gold); 
+            color: var(--sae-black);
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.4);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--sae-gold); 
+            font-size: 1.3rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--sae-burgundy);
+            color: #aaa;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 25px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--sae-gold);
+            color: var(--sae-gold);
+            background: rgba(128, 0, 32, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE PRODIGY</h1>
+        <div class="subtitle">Sae Itoshi Technical Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "Si quieres ver el mundo, primero debes entender que eres insignificante. <br>
+                <strong>Solo lo hermoso y lo eficientemente destructivo tiene valor."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                WORLD CLASS: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR CARRERA</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--sae-gold); cursor: pointer; float: right; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">EJECUCIÓN PERFECTA</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (SAE STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: THE PRODIGY (Técnica, Visión, Eficiencia)
+            switch(dayType) {
+                case 1: 
+                    title = "DESTRUCCIÓN TÉCNICA";
+                    description = `<strong>Objetivo:</strong> Romper tobillos con elegancia.<br><br>• Dribbling pasivo (Esperar al defensa): 15 mins<br>• Tijeras rápidas y túneles (Caños) a conos<br>• Control con el exterior en giro<br>• Cambio de peso corporal sutil (Body Feint)`;
+                    break;
+                case 2: 
+                    title = "CÁLCULO DE PASE";
+                    description = `<strong>Objetivo:</strong> La trayectoria perfecta.<br><br>• Pases de trivela (Exterior) curvos: 30 reps<br>• Pase largo al espacio (40m) con precisión<br>• Paredes rápidas de un toque (Wall pass)<br>• Control aéreo "Black Hole" (Amortiguar)`;
+                    break;
+                case 3: 
+                    title = "EFICIENCIA FÍSICA";
+                    description = `<strong>Objetivo:</strong> Mínimo esfuerzo, máximo resultado.<br><br>• Core Rotacional (Para disparar sin balance)<br>• Sprints de 10m (Aceleración pura)<br>• Equilibrio en bosu ball (Estabilidad)<br>• Coordinación óculo-podal avanzada`;
+                    break;
+                case 4: 
+                    title = "TIRO DE LÍNEA";
+                    description = `<strong>Objetivo:</strong> Disparo imposible de leer.<br><br>• Tiro raso potente a la base del poste: 20 reps<br>• Volea técnica (Técnica de golpeo limpia)<br>• Tiro libre táctico (Por debajo de la barrera)<br>• Definición 1vs1 (Picada/Chip)`;
+                    break;
+                case 0: 
+                    title = "MANTENIMIENTO DE VALOR";
+                    description = `<strong>Objetivo:</strong> Recuperación profesional.<br><br>• Análisis de video (Fútbol europeo)<br>• Yoga y movilidad de cadera<br>• Baño relajante y meditación<br>• Cuidado de los pies (Herramientas de trabajo)`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación elegante
+                dayDiv.style.animation = `elegancePulse 4s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${i * 0.1}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">⚜️</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Borgoña/Oro) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: FLOR DE LIS (Realeza)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">⚜️</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('sae_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('sae_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de destruir tu valor actual?")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 6 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                
+                // Colores: Oro y Borgoña
+                const colors = ['#c5a059', '#800020', '#ffffff'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Partículas redondas y suaves
+                particle.style.borderRadius = '50%'; 
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento fluido y elegante (curvas)
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 60 + 20;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Ease-out suave
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

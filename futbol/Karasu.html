@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabito Karasu: The Assassin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Darker+Grotesque:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES KARASU (THE ASSASSIN) --- */
+        :root {
+            --karasu-violet: #7c4dff;   /* Violeta Eléctrico */
+            --karasu-dark: #12002b;     /* Fondo Cuervo */
+            --karasu-black: #05000a;    /* Negro Abisal */
+            --sharp-silver: #e0e0e0;    /* Plata Afilada */
+            
+            --font-title: 'Syncopate', sans-serif; /* Futurista/Analítico */
+            --font-body: 'Darker Grotesque', sans-serif; /* Serio/Oscuro */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--karasu-black);
+            color: var(--sharp-silver);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Patrón de plumas abstracto sutil */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(124, 77, 255, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(124, 77, 255, 0.08) 0%, transparent 20%);
+        }
+
+        /* --- FONDO ANIMADO (Sombra Fluida) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(18, 0, 43, 0.4) 100%);
+            animation: pulseShadow 5s infinite alternate;
+        }
+
+        @keyframes pulseShadow { from { opacity: 0.3; } to { opacity: 0.7; } }
+
+        /* --- BARRA DE PROGRESO (TARGET LOCK) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
+            background: #000; z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; 
+            background: var(--karasu-violet); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--karasu-violet);
+            transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(5, 0, 10, 0.8), rgba(0, 0, 0, 1)), url('imagenes/KARASU.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 1px solid var(--karasu-violet);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--karasu-violet);
+            letter-spacing: 6px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(124, 77, 255, 0.4);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            color: var(--karasu-black);
+            background: var(--sharp-silver);
+            padding: 8px 25px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            font-weight: 700;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(18, 0, 43, 0.9);
+            border-left: 4px solid var(--karasu-violet);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            color: #bdbdbd;
+            font-family: var(--font-body);
+            line-height: 1.4;
+        }
+        .quote-text strong { 
+            color: var(--karasu-violet); 
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #333;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            background: rgba(124, 77, 255, 0.1);
+            border-color: var(--karasu-violet);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(124, 77, 255, 0.2);
+        }
+
+        .day-card.completed {
+            background: var(--karasu-violet);
+            color: var(--karasu-black);
+            border-color: var(--karasu-violet);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.5rem; 
+            font-weight: 700;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 0, 10, 0.96); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #0f001f;
+            border: 1px solid var(--karasu-violet);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 60px rgba(124, 77, 255, 0.15);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-title); color: #666; font-size: 1rem; letter-spacing: 2px; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2rem; color: var(--karasu-violet); margin: 0; text-transform: uppercase; line-height: 1.1; }
+        .modal-desc { line-height: 1.7; color: #d1c4e9; font-size: 1.1rem; margin-top: 25px; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 35px;
+            background: transparent; border: 1px solid var(--karasu-violet); color: var(--karasu-violet);
+            font-family: var(--font-title); font-size: 1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 3px;
+        }
+        .btn-action:hover { 
+            background: var(--karasu-violet); 
+            color: var(--white);
+            box-shadow: 0 0 30px var(--karasu-violet);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--karasu-violet); 
+            font-size: 1.2rem; letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--karasu-violet);
+            color: var(--karasu-violet);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            background: rgba(124, 77, 255, 0.1);
+            box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE ASSASSIN</h1>
+        <div class="subtitle">Tabito Karasu Analysis Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "La mediocridad es tu punto débil. <br>
+                <strong>Observaré, analizaré y te romperé desde adentro."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                TARGET ANALYZED: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Análisis</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--karasu-violet); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">ELIMINAR OBJETIVO</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (KARASU STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA: CONTROL DE BRAZOS, ANÁLISIS, FINTAS Y POSESIÓN
+            switch(dayType) {
+                case 1: 
+                    title = "CONTROL DE ESPACIO (MANOS)";
+                    description = `<strong>Objetivo:</strong> Usar los brazos como arma.<br><br>• Protección de balón estática (Shielding) con compañero o pared<br>• Dribbling con una mano extendida (marcando distancia)<br>• Giros usando el brazo para bloquear<br>• Flexiones de brazos (fuerza de empuje)`;
+                    break;
+                case 2: 
+                    title = "FINTA DE CUERPO";
+                    description = `<strong>Objetivo:</strong> Engañar el centro de gravedad.<br><br>• Fintas de hombro sin tocar balón: 50 reps<br>• Cambio de dirección brusco (Zig-Zag)<br>• Dribbling pausado -> Aceleración explosiva<br>• 'La Croqueta' (cambio de pie rápido)`;
+                    break;
+                case 3: 
+                    title = "ANÁLISIS DE DEBILIDAD";
+                    description = `<strong>Objetivo:</strong> Inteligencia táctica.<br><br>• 1vs1 enfocado en atacar el pie débil del rival<br>• Observación de partidos (Identificar errores)<br>• Pases filtrados a la espalda de la defensa<br>• Mantener la posesión bajo presión alta`;
+                    break;
+                case 4: 
+                    title = "RESISTENCIA TÉCNICA";
+                    description = `<strong>Objetivo:</strong> No perder el balón nunca.<br><br>• Conducción de balón 20 mins sin perder control<br>• Dominio de balón en espacio reducido (1m x 1m)<br>• Rondo solitario contra pared (1 toque)<br>• Sentadilla isométrica (Base fuerte)`;
+                    break;
+                case 0: 
+                    title = "OBSERVACIÓN SILENCIOSA";
+                    description = `<strong>Objetivo:</strong> Recuperación mental.<br><br>• Caminata analítica (Observar el entorno)<br>• Estiramiento de tren superior (Pectoral/Hombro)<br>• Hidratación y estudio de táctica<br>• Meditación: Visualizar el campo como un tablero`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación sutil y afilada
+                dayDiv.style.animation = `pulseShadow 2s ease-in-out backwards ${i * 0.02}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🪶</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `TARGET ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Violetas/Plumas) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: PLUMA (Crow)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🪶</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('karasu_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('karasu_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de reiniciar tu análisis? Se perderán todos los datos.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 8 + 2 + 'px'; // Alargadas
+                particle.style.height = Math.random() * 15 + 5 + 'px'; 
+                
+                // Colores: Violeta, Negro y Plata
+                const colors = ['#7c4dff', '#e0e0e0', '#000000'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Forma de pluma o fragmento afilado
+                particle.style.borderRadius = '50% 50% 0 0'; 
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento flotante (caída de plumas o ráfaga)
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 80 + 20;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const rot = Math.random() * 360;
+
+                particle.animate([
+                    { transform: 'translate(0,0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

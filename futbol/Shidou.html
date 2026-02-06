@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidou Ryusei: Biological Explosion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Rock+Salt&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES SHIDOU (DEMON) --- */
+        :root {
+            --shidou-pink: #ff0055;     /* Rosa Violento */
+            --shidou-purple: #9000ff;   /* Púrpura Eléctrico */
+            --demon-black: #050005;     /* Negro Abisal */
+            --flesh-tone: #ffccbc;      /* Tono orgánico sutil */
+            --white: #ffffff;
+            
+            --font-title: 'Permanent Marker', cursive; /* Graffiti/Caos */
+            --font-body: 'Roboto Condensed', sans-serif; /* Condensada fuerte */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--demon-black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Fondo manchado/sucio */
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 0, 85, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(144, 0, 255, 0.1) 0%, transparent 40%);
+        }
+
+        /* --- FONDO ANIMADO (Explosiones/Células) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at center, rgba(255, 0, 85, 0.05) 0%, transparent 70%);
+            animation: pulseExplosion 0.5s infinite alternate; /* Ritmo cardíaco rápido */
+        }
+
+        @keyframes pulseExplosion { from { opacity: 0.2; transform: scale(1); } to { opacity: 0.4; transform: scale(1.02); } }
+
+        /* --- BARRA DE PROGRESO (DNA GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 8px;
+            background: #000; z-index: 1000;
+            border-bottom: 2px solid var(--shidou-pink);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--shidou-pink), var(--shidou-purple)); 
+            width: 0%;
+            box-shadow: 0 0 20px var(--shidou-pink);
+            transition: width 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Movimiento agresivo */
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(20, 0, 5, 0.6), rgba(5, 0, 5, 1)), url('imagenes/SHIDOU.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 4px solid var(--shidou-pink);
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--shidou-pink);
+            text-shadow: 3px 3px 0px var(--shidou-purple);
+            transform: rotate(-2deg);
+            animation: shake 3s infinite;
+        }
+
+        @keyframes shake { 0% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } 100% { transform: rotate(-2deg); } }
+
+        .subtitle {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #000;
+            background: var(--white);
+            padding: 5px 30px;
+            margin-top: 15px;
+            font-family: 'Rock Salt', cursive;
+            font-weight: bold;
+            box-shadow: 5px 5px 0px var(--shidou-purple);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -30px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 0, 10, 0.9);
+            border: 3px dashed var(--shidou-pink);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 40px rgba(255, 0, 85, 0.2);
+            transform: rotate(1deg);
+        }
+
+        .quote-text {
+            font-size: 1.6rem;
+            color: #eee;
+            font-family: var(--font-body);
+            line-height: 1.4;
+        }
+        .quote-text strong { 
+            color: var(--shidou-purple); 
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            display: block;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .day-card {
+            background: #100505;
+            border: 2px solid #330011;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border-radius: 10px 0 10px 0;
+        }
+
+        .day-card:hover {
+            border-color: var(--shidou-pink);
+            background: var(--shidou-purple);
+            color: #fff;
+            transform: scale(1.1) rotate(-3deg);
+            box-shadow: 0 0 20px var(--shidou-purple);
+            z-index: 10;
+        }
+
+        .day-card.completed {
+            background: var(--shidou-pink);
+            color: #000;
+            border-color: var(--white);
+            transform: rotate(2deg);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 0, 5, 0.98); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #0a0005;
+            border: 4px solid var(--shidou-purple);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 60px rgba(144, 0, 255, 0.4);
+            transform: rotate(-1deg);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--shidou-pink); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-title); color: var(--shidou-pink); font-size: 1.5rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--white); margin: 0; text-transform: uppercase; text-shadow: 2px 2px var(--shidou-purple); }
+        .modal-desc { line-height: 1.6; color: #ffccbc; font-size: 1.2rem; margin-top: 25px; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 35px;
+            background: var(--shidou-pink); border: none; color: #fff;
+            font-family: var(--font-title); font-size: 1.5rem; cursor: pointer;
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 5px 5px 0 #000;
+        }
+        .btn-action:hover { 
+            background: var(--shidou-purple); 
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0 #fff;
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--shidou-purple); 
+            font-size: 1.5rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+            transform: rotate(-2deg);
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 2px solid var(--shidou-pink);
+            color: var(--shidou-pink);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            padding: 10px 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            background: var(--shidou-pink);
+            color: #000;
+            box-shadow: 0 0 20px var(--shidou-pink);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>BIOLOGICAL EXPLOSION</h1>
+        <div class="subtitle">Shidou Ryusei Demon Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "¿Táctica? ¿Lógica? ¡Me importa una mierda! <br>
+                <strong>Solo quiero sentir cómo mis células explotan cuando marco gol."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                EXPLOSION LEVEL: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR CÉLULAS</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--white); cursor: pointer; font-size: 2rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">EXPLOTAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (SHIDOU STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: DEMONIO DEL ÁREA (Voleas, Acrobacias, Instinto)
+            switch(dayType) {
+                case 1: 
+                    title = "DRAGON DIVE (VOLEAS)";
+                    description = `<strong>Objetivo:</strong> Rematar lo imposible.<br><br>• Voleas de espaldas al arco (Giro 180º): 20 reps<br>• Tijeras/Chilenas (en colchoneta o césped): 10 reps<br>• Remate de aire sin dejar caer balón<br>• Salto vertical con rodillas al pecho (Explosión)`;
+                    break;
+                case 2: 
+                    title = "INSTINTO BIOLÓGICO";
+                    description = `<strong>Objetivo:</strong> Moverse antes de pensar.<br><br>• Reacción a estímulos (Sonido/Color): Sprint corto<br>• Slalom caótico (Sin patrón fijo, puro instinto)<br>• 1vs1 agresivo (Buscar el contacto y ganar)<br>• Box Jumps explosivos: 5 x 5 (Altura máxima)`;
+                    break;
+                case 3: 
+                    title = "REY DEL ÁREA PENAL";
+                    description = `<strong>Objetivo:</strong> Cualquier lugar es gol.<br><br>• Definición desde ángulos cerrados (Sin mirar)<br>• Control de pecho y remate rápido<br>• Anticipación al primer palo (Sprint 5m)<br>• Lucha de posición (Cuerpo a cuerpo imaginario)`;
+                    break;
+                case 4: 
+                    title = "VIOLENCIA FÍSICA";
+                    description = `<strong>Objetivo:</strong> Cuerpo capaz de todo.<br><br>• Flexiones explosivas (Palmada en aire)<br>• Sentadilla con salto (Jump Squats)<br>• Plancha dinámica (Spiderman)<br>• Dominadas explosivas (Muscle-up si es posible)`;
+                    break;
+                case 0: 
+                    title = "HIBERNACIÓN";
+                    description = `<strong>Objetivo:</strong> Recargar para explotar.<br><br>• Comer carne (Mucha proteína)<br>• Dormir sin alarma<br>• Estiramiento de espalda y cadera (Para acrobacias)<br>• Visualización de goles salvajes`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación caótica
+                let randomRot = (Math.random() - 0.5) * 5; 
+                dayDiv.style.transform = `rotate(${randomRot}deg)`;
+                
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2.5rem">🧬</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Caóticas) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: ADN (Biological)
+            card.innerHTML = `<span class="day-number" style="font-size:2.5rem">🧬</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('shidou_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('shidou_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Quieres destruir tu evolución y empezar de cero?")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 10 + 5 + 'px'; // Tamaños irregulares
+                particle.style.height = particle.style.width;
+                
+                // Colores: Rosa, Púrpura, Blanco
+                const colors = ['#ff0055', '#9000ff', '#ffffff'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Formas caóticas (algunos circulos, otros cuadrados)
+                particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Explosión rápida y desordenada
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0) rotate(${Math.random()*360}deg)`, opacity: 0 }
+                ], {
+                    duration: 700,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

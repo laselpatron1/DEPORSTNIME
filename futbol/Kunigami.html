@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kunigami Rensuke: Wild Card Protocol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Chakra+Petch:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES KUNIGAMI (WILD CARD) --- */
+        :root {
+            --kunigami-orange: #FF5722;   /* Naranja intenso */
+            --kunigami-magma: #FF3D00;    /* Naranja rojizo */
+            --wild-card-dark: #101010;    /* Negro puro */
+            --steel-gray: #263238;        /* Metal oscuro */
+            --white: #ffffff;
+            
+            --font-title: 'Black Ops One', cursive; /* Estilo militar/pesado */
+            --font-body: 'Chakra Petch', sans-serif; /* Estilo cuadrado/técnico */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: radial-gradient(circle at 50% 50%, #1c1c1c 0%, #000000 100%);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Ascuas/Energía) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                radial-gradient(rgba(255, 87, 34, 0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, transparent, rgba(0,0,0,0.8));
+            background-size: 50px 50px;
+            animation: pulseBackground 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseBackground { 
+            0% { opacity: 0.3; } 
+            50% { opacity: 0.6; } 
+            100% { opacity: 0.3; } 
+        }
+
+        /* --- BARRA DE PROGRESO (MUSCLE GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 10px;
+            background: #000; z-index: 1000;
+            border-bottom: 1px solid var(--steel-gray);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: repeating-linear-gradient(
+                45deg,
+                var(--kunigami-orange),
+                var(--kunigami-orange) 10px,
+                var(--kunigami-magma) 10px,
+                var(--kunigami-magma) 20px
+            );
+            width: 0%;
+            box-shadow: 0 0 10px var(--kunigami-orange);
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(16, 16, 16, 1)), url('imagenes/KUNIGAMI.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 4px solid var(--kunigami-orange);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--kunigami-orange);
+            text-shadow: 4px 4px 0px #000;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: #000;
+            background: var(--white);
+            padding: 8px 25px;
+            margin-top: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -40px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(38, 50, 56, 0.8);
+            border: 2px solid var(--kunigami-orange);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 0px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #eceff1;
+            text-transform: uppercase;
+        }
+        .quote-text strong { 
+            color: var(--kunigami-orange); 
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .day-card {
+            background: #151515;
+            border: 2px solid var(--steel-gray);
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--kunigami-orange);
+            background: #202020;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 87, 34, 0.3);
+        }
+
+        .day-card.completed {
+            background: var(--kunigami-orange);
+            border-color: var(--white);
+            color: #000;
+            transform: translateY(2px);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.8rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #181818;
+            border: 4px solid var(--kunigami-orange);
+            width: 90%; max-width: 500px;
+            padding: 30px; 
+            text-align: left;
+            position: relative;
+        }
+
+        .modal-header { 
+            background: var(--kunigami-orange); 
+            color: #000; 
+            padding: 10px; 
+            margin: -30px -30px 20px -30px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-day { font-family: var(--font-title); font-size: 1.5rem; padding-left: 20px; }
+        .close-btn { font-size: 2rem; padding-right: 20px; cursor: pointer; font-weight: bold;}
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--white); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-desc { line-height: 1.6; color: #b0bec5; font-size: 1.1rem; margin-top: 20px; border-left: 3px solid var(--steel-gray); padding-left: 15px; }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 20px; margin-top: 30px;
+            background: var(--steel-gray); border: none; color: var(--white);
+            font-family: var(--font-title); font-size: 1.2rem; cursor: pointer;
+            transition: 0.2s; text-transform: uppercase;
+        }
+        .btn-action:hover { 
+            background: var(--kunigami-orange); 
+            color: #000;
+        }
+
+        .stats {
+            text-align: center; margin-bottom: 25px; 
+            font-family: var(--font-title); color: var(--kunigami-orange); 
+            font-size: 1.5rem; letter-spacing: 2px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 2px solid var(--kunigami-orange);
+            color: var(--kunigami-orange);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+        .btn-reset:hover {
+            background: var(--kunigami-orange);
+            color: #000;
+            box-shadow: 0 0 15px var(--kunigami-orange);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>WILD CARD</h1>
+        <div class="subtitle">Kunigami Rensuke Physique Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "No necesito ser un héroe. <br>
+                <strong>Solo necesito ser el más fuerte y devorarlos a todos."</strong>
+            </p>
+        </div>
+
+        <div class="stats">
+            EVOLUCIÓN FÍSICA: <span id="progressText">0</span>%
+            <br>
+            <button class="btn-reset" onclick="resetData()">Reiniciar Wild Card</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span class="close-btn" onclick="document.getElementById('modal').style.display='none'">×</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">EJECUTAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (KUNIGAMI STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 12 + cycle; // Repeticiones pesadas pero controladas
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: WILD CARD (Físico, Disparo y Core)
+            switch(dayType) {
+                case 1: 
+                    title = "CONSTRUCCIÓN MUSCULAR";
+                    description = `<strong>Objetivo:</strong> Físico inamovible.<br><br>• Sentadillas con salto explosivo: 4 x 12<br>• Flexiones diamante (tríceps/pecho): ${reps} reps<br>• Dominadas estrictas (o remo): 4 series al fallo<br>• Press militar (hombros)`;
+                    break;
+                case 2: 
+                    title = "LEFTY CANNON";
+                    description = `<strong>Objetivo:</strong> Rango de 40 metros.<br><br>• Tiros de potencia media distancia (Pierna Izq): 50 reps<br>• Knuckleball Practice (Tiro sin rotación)<br>• Sentadilla a una pierna (Pistol Squats)<br>• Fortalecimiento de empeine`;
+                    break;
+                case 3: 
+                    title = "CORE BLINDADO";
+                    description = `<strong>Objetivo:</strong> Estabilidad en el choque.<br><br>• Plancha con peso adicional: 4 x 45s<br>• Abdominales en V explosivos<br>• Giros rusos con balón medicinal<br>• Dragon Flags (Progresión)`;
+                    break;
+                case 4: 
+                    title = "POTENCIA DE REACCIÓN";
+                    description = `<strong>Objetivo:</strong> Explosividad Wild Card.<br><br>• Box Jumps (Altura máxima): 5 x 5<br>• Sprints de arrastre (con paracaídas o peso)<br>• Burpees con salto de rodillas al pecho<br>• Salidas de potencia pura`;
+                    break;
+                case 0: 
+                    title = "MANTENIMIENTO CYBORG";
+                    description = `<strong>Objetivo:</strong> Recuperación activa.<br><br>• Baño de contraste (Frío/Calor)<br>• Estiramiento estático de cuerpo completo<br>• Rodillo de espuma (Liberación miofascial)<br>• Ingesta alta de proteínas`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:1.8rem">💥</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Magma) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: EXPLOSIÓN (Power)
+            card.innerHTML = `<span class="day-number" style="font-size:1.8rem">💥</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('kunigami_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('kunigami_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Estás seguro de reiniciar el protocolo Wild Card? Se borrará todo.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 35; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 10 + 5 + 'px'; 
+                particle.style.height = particle.style.width;
+                
+                // Colores: Naranja, Rojo, Negro
+                const colors = ['#FF5722', '#FF3D00', '#000000'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                // Formas angulares
+                particle.style.transform = `rotate(${Math.random() * 360}deg)`; 
+                
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 120 + 30;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'ease-out',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

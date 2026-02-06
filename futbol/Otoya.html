@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otoya Eita: The Ninja Protocol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Michroma&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES OTOYA (THE NINJA) --- */
+        :root {
+            --ninja-green: #39ff14;     /* Verde Neón Ácido */
+            --ninja-dark: #0a0f0a;      /* Negro Verdoso muy oscuro */
+            --shadow-gray: #2c3e2c;     /* Gris Camuflaje */
+            --smoke-white: #f0fff0;     /* Blanco Humo */
+            
+            --font-title: 'Michroma', sans-serif; /* Moderno/Afilado */
+            --font-body: 'Courier Prime', monospace; /* Documento secreto */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background-color: var(--ninja-dark);
+            color: var(--smoke-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Patrón de camuflaje digital muy sutil */
+            background-image: 
+                linear-gradient(rgba(10, 15, 10, 0.9), rgba(10, 15, 10, 0.9)),
+                repeating-linear-gradient(45deg, #111 0, #111 10px, #151515 10px, #151515 20px);
+        }
+
+        /* --- FONDO ANIMADO (Humo/Niebla) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(57, 255, 20, 0.05) 0%, transparent 60%);
+            animation: vanish 6s infinite ease-in-out alternate;
+        }
+
+        @keyframes vanish {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* --- BARRA DE PROGRESO (STEALTH GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 5px;
+            background: #000; z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%; 
+            background: var(--ninja-green); 
+            width: 0%;
+            box-shadow: 0 0 10px var(--ninja-green);
+            transition: width 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(10, 15, 10, 1)), url('imagenes/OTOYA.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            border-bottom: 1px solid var(--ninja-green);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--ninja-green);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            letter-spacing: 6px;
+            color: var(--ninja-dark);
+            background: var(--ninja-green);
+            padding: 5px 25px;
+            margin-top: 15px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 30, 20, 0.8);
+            border-left: 3px solid var(--ninja-green);
+            border-right: 3px solid var(--ninja-green);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            backdrop-filter: blur(4px);
+        }
+
+        .quote-text {
+            font-size: 1.2rem;
+            color: #ccc;
+            font-family: var(--font-body);
+        }
+        .quote-text strong { 
+            color: var(--ninja-green); 
+            font-family: var(--font-title);
+            font-size: 1.4rem;
+            display: block;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 5px;
+        }
+
+        .day-card {
+            background: rgba(10, 20, 10, 0.8);
+            border: 1px solid #222;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            border-color: var(--ninja-green);
+            box-shadow: 0 0 10px var(--ninja-green);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .day-card.completed {
+            background: var(--ninja-green);
+            color: var(--ninja-dark);
+            border-color: var(--ninja-green);
+            font-weight: bold;
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 1.5rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #050505;
+            border: 1px solid var(--ninja-green);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.1);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-body); color: var(--ninja-green); font-size: 1.1rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2rem; color: var(--smoke-white); margin: 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.6; color: #888; font-size: 1rem; margin-top: 25px; font-family: var(--font-body); }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: 35px;
+            background: transparent; border: 1px solid var(--ninja-green); color: var(--ninja-green);
+            font-family: var(--font-title); font-size: 1rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-action:hover { 
+            background: var(--ninja-green); 
+            color: var(--ninja-dark);
+            box-shadow: 0 0 20px var(--ninja-green);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-body); color: var(--ninja-green); 
+            font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid #444;
+            color: #666;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--ninja-green);
+            color: var(--ninja-green);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE NINJA</h1>
+        <div class="subtitle">Otoya Eita Stealth Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "No necesitas ser el más rápido si nadie te ve venir. <br>
+                <strong>Mi presencia es cero. Mi letalidad es absoluta."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                STEALTH MASTERY: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR MISIÓN</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">MISSION_DAY_01</span>
+                <span style="color: var(--ninja-green); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">[X]</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">EJECUTAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (OTOYA STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA ÚNICA: THE NINJA (Stealth, Agilidad, Off-the-ball)
+            switch(dayType) {
+                case 1: 
+                    title = "MOVIMIENTO FANTASMA (OFF-BALL)";
+                    description = `<strong>Objetivo:</strong> Desaparecer del radar.<br><br>• Sprints en 'punto ciego' (Entrar por detrás de objetos/conos)<br>• Cambios de ritmo silenciosos (Trote a Sprint sin aviso)<br>• Fintas de cuerpo sin balón<br>• Saltos de precisión (Parkour básico)`;
+                    break;
+                case 2: 
+                    title = "AGILIDAD DE SOMBRA";
+                    description = `<strong>Objetivo:</strong> Fluidez total.<br><br>• Escalera de agilidad (Pasos rápidos y silenciosos)<br>• Slalom entre conos sin tocar bordes<br>• Burpees explosivos (Aterrizaje suave)<br>• Carreras laterales y cruzadas (Carioca)`;
+                    break;
+                case 3: 
+                    title = "PRIMER TOQUE LETAL";
+                    description = `<strong>Objetivo:</strong> Matar el balón y al rival.<br><br>• Control orientado en carrera (1 toque para acomodar)<br>• Recepción de espaldas y giro rápido (180º)<br>• Tiros de primera intención (Voleas bajas)<br>• Paredes rápidas contra muro (1 toque)`;
+                    break;
+                case 4: 
+                    title = "STRIKER INVISIBLE";
+                    description = `<strong>Objetivo:</strong> Definición.<br><br>• Carrera diagonal al área + Definición<br>• Tiro raso a las esquinas (Precisión sobre potencia)<br>• Regate simple y eficaz (Body feint)<br>• Sprints de recuperación defensiva (Pressing)`;
+                    break;
+                case 0: 
+                    title = "CAMUFLAJE Y MENTE";
+                    description = `<strong>Objetivo:</strong> Recuperación sigilosa.<br><br>• Yoga o Tai Chi (Control corporal lento)<br>• Caminata nocturna (Percepción del entorno)<br>• Meditación: Vaciar la mente<br>• Estiramientos profundos de tren inferior`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Efecto de aparición discreta
+                dayDiv.style.animation = `vanish 4s ease-in-out infinite alternate`;
+                dayDiv.style.animationDelay = `${i * 0.05}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">🥷</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `MISSION_DAY_0${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Shuriken/Verde) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: NINJA
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">🥷</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('otoya_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('otoya_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Abortar misión y reiniciar? Se perderán todos los datos.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                
+                // Colores: Verde Neon y Negro
+                const colors = ['#39ff14', '#000000'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Forma de estrella de 4 puntas (CSS Clip Path)
+                particle.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento rotatorio (lanzamiento)
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 40;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const rot = Math.random() * 720; // Mucha rotación
+
+                particle.animate([
+                    { transform: 'translate(0,0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'ease-out',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reo Mikage: The Chameleon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES REO (ROYAL CHAMELEON) --- */
+        :root {
+            --reo-purple: #9d00ff;      /* Púrpura Neón */
+            --reo-deep-purple: #4a0072; /* Púrpura Oscuro */
+            --reo-gold: #ffd700;        /* Dorado (Mikage Corp) */
+            --luxury-black: #050505;    /* Negro Sofisticado */
+            --platinum: #e0e0e0;        /* Gris Platino */
+            
+            --font-title: 'Cinzel', serif; /* Elegante/Realeza */
+            --font-body: 'Exo 2', sans-serif; /* Moderno/Versátil */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: radial-gradient(circle at top, #1a0029 0%, var(--luxury-black) 100%);
+            color: var(--platinum);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- FONDO ANIMADO (Aura Púrpura) --- */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(45deg, rgba(157, 0, 255, 0.05) 25%, transparent 25%), 
+                linear-gradient(-45deg, rgba(157, 0, 255, 0.05) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, rgba(157, 0, 255, 0.05) 75%), 
+                linear-gradient(-45deg, transparent 75%, rgba(157, 0, 255, 0.05) 75%);
+            background-size: 60px 60px;
+            animation: elegance 10s linear infinite;
+        }
+
+        @keyframes elegance { 
+            0% { background-position: 0 0; } 
+            100% { background-position: 60px 60px; } 
+        }
+
+        /* --- BARRA DE PROGRESO (COPY GAUGE) --- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 5px;
+            background: #000; z-index: 1000;
+            border-bottom: 1px solid var(--reo-deep-purple);
+        }
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--reo-purple), var(--reo-gold)); 
+            width: 0%;
+            box-shadow: 0 0 15px var(--reo-purple);
+            transition: width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(74, 0, 114, 0.4), rgba(5, 5, 5, 1)), url('imagenes/REO.png'); 
+            background-size: cover;
+            background-position: center 20%;
+            z-index: 1;
+            border-bottom: 2px solid var(--reo-gold);
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--reo-purple);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--reo-deep-purple), 1px 1px 0 var(--reo-gold);
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--luxury-black);
+            background: var(--reo-gold);
+            padding: 6px 30px;
+            font-weight: 700;
+            margin-top: 15px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            border-radius: 2px;
+        }
+
+        /* --- CONTENEDOR --- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 50px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-card {
+            background: rgba(20, 5, 30, 0.9);
+            border: 1px solid var(--reo-purple);
+            border-top: 4px solid var(--reo-gold);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #d1c4e9;
+            font-family: var(--font-body);
+        }
+        .quote-text strong { 
+            color: var(--reo-gold); 
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            display: block;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* --- GRID CALENDARIO --- */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .day-card {
+            background: rgba(157, 0, 255, 0.05);
+            border: 1px solid var(--reo-deep-purple);
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            transform: rotate(0deg);
+        }
+
+        .day-card:hover {
+            border-color: var(--reo-gold);
+            background: rgba(157, 0, 255, 0.15);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.4);
+        }
+
+        /* Estado Completado */
+        .day-card.completed {
+            background: linear-gradient(135deg, var(--reo-purple), var(--reo-deep-purple));
+            border: 1px solid var(--reo-gold);
+            color: var(--reo-gold);
+        }
+
+        .day-number { 
+            font-family: var(--font-title); 
+            font-size: 2rem; 
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 0, 10, 0.95); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: #0f0014;
+            border: 2px solid var(--reo-purple);
+            width: 90%; max-width: 500px;
+            padding: 40px; 
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 50px rgba(157, 0, 255, 0.2);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--reo-deep-purple); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-day { font-family: var(--font-title); color: var(--reo-gold); font-size: 1.2rem; }
+        
+        .modal-title { font-family: var(--font-title); font-size: 2.2rem; color: var(--platinum); margin: 0; text-transform: uppercase; }
+        .modal-desc { line-height: 1.8; color: #b39ddb; font-size: 1.1rem; margin-top: 20px; font-family: var(--font-body); }
+        
+        .btn-action {
+            display: block; width: 100%; padding: 18px; margin-top: 30px;
+            background: transparent; border: 1px solid var(--reo-gold); color: var(--reo-gold);
+            font-family: var(--font-title); font-size: 1.2rem; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-action:hover { 
+            background: var(--reo-gold); 
+            color: var(--luxury-black);
+            box-shadow: 0 0 25px var(--reo-gold);
+        }
+
+        .stats-container {
+            text-align: center; margin-bottom: 40px; 
+        }
+
+        .stats {
+            font-family: var(--font-title); color: var(--reo-purple); 
+            font-size: 1.4rem; letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--reo-deep-purple);
+            color: #b39ddb;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: var(--reo-gold);
+            color: var(--reo-gold);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .calendar-wrapper { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <h1>THE CHAMELEON</h1>
+        <div class="subtitle">Reo Mikage Versatility Protocol</div>
+    </header>
+
+    <div class="container">
+        <div class="quote-card">
+            <p class="quote-text">
+                "No necesito ser el número uno en una sola cosa. <br>
+                <strong>Puedo tenerlo todo. Copiaré tu arma y la haré mía."</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                VERSATILITY LEVEL: <span id="progressText">0</span>%
+            </div>
+            <button class="btn-reset" onclick="resetData()">REINICIAR COPIA</button>
+        </div>
+
+        <div id="calendar" class="calendar-wrapper"></div>
+    </div>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalDay" class="modal-day">DÍA 01</span>
+                <span style="color: var(--reo-purple); cursor: pointer; font-size: 1.5rem;" onclick="document.getElementById('modal').style.display='none'">✕</span>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Título</h2>
+            <div id="modalDesc" class="modal-desc">Descripción...</div>
+            <button class="btn-action" onclick="completeDay()">ADQUIRIR HABILIDAD</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA DE DATOS (REO STYLE) ---
+        let currentDayIndex = 0;
+        let completedDays = new Set(); 
+
+        function getWorkout(dayIndex) {
+            let dayType = dayIndex % 5;
+            let cycle = Math.ceil(dayIndex / 5);
+            let reps = 15 + cycle; 
+            
+            let title = "", description = "";
+
+            // RUTINA: COPIA DE ESTILOS (Versatilidad Total)
+            switch(dayType) {
+                case 1: 
+                    title = "COPIA: SAE (TÉCNICA)";
+                    description = `<strong>Objetivo:</strong> Precisión Quirúrgica.<br><br>• Pases largos a objetivo fijo (ambas piernas): 30 reps<br>• Control de balón en el aire (Toques suaves)<br>• Tiro de precisión (Borde interno) a las esquinas<br>• Rondo solitario (Ritmo rápido)`;
+                    break;
+                case 2: 
+                    title = "COPIA: RIN (CURVA)";
+                    description = `<strong>Objetivo:</strong> Dominio del arco.<br><br>• Tiros con efecto (Curva interior): 20 reps por lado<br>• Corners olímpicos (Intentos)<br>• Conducción con cambios de ritmo calculados<br>• Análisis táctico (Ver partido y predecir jugadas)`;
+                    break;
+                case 3: 
+                    title = "COPIA: NAGI (CONTROL)";
+                    description = `<strong>Objetivo:</strong> Trampa perfecta.<br><br>• Control aéreo de balón alto (Amortiguar)<br>• Recepción de espaldas y giro rápido<br>• Volea tras control difícil<br>• Salto vertical para bajar balón`;
+                    break;
+                case 4: 
+                    title = "COPIA: AIKU (DEFENSA)";
+                    description = `<strong>Objetivo:</strong> Físico y Lectura.<br><br>• Sprints defensivos (Recuperación)<br>• Plancha lateral y frontal (Core de hierro): 1 min<br>• Saltos de cabeza defensivos<br>• Entrada lateral (Técnica de barrida)`;
+                    break;
+                case 0: 
+                    title = "MIKAGE CORP RECOVERY";
+                    description = `<strong>Objetivo:</strong> Mantenimiento de élite.<br><br>• Baño de sales y agua caliente<br>• Masaje muscular completo<br>• Comida de alta calidad (Nutrición perfecta)<br>• Dormir 8+ horas (Recarga mental)`;
+                    break;
+            }
+            return { title, description };
+        }
+
+        // --- 2. GENERADOR DE GRID ---
+        const calendarContainer = document.getElementById('calendar');
+
+        function generateGrid() {
+            calendarContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day-card');
+                dayDiv.id = `day-${i}`;
+                
+                // Animación de aparición elegante
+                dayDiv.style.animation = `fadeIn 0.5s ease backwards ${i * 0.02}s`;
+
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                // Marcar si ya está completado
+                if (completedDays.has(i)) {
+                    dayDiv.classList.add('completed');
+                    dayDiv.innerHTML = `<span class="day-number" style="font-size:2rem">♦</span>`;
+                }
+
+                dayDiv.addEventListener('click', function() {
+                    currentDayIndex = i;
+                    const workout = getWorkout(i);
+                    openModal(i, workout.title, workout.description);
+                });
+
+                calendarContainer.appendChild(dayDiv);
+            }
+        }
+
+        // --- 3. FUNCIONES DE INTERFAZ ---
+        function openModal(day, title, desc) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalDay').innerText = `DÍA ${day}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'modal') document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 4. GAMIFICACIÓN (Partículas Diamante) ---
+        function completeDay() {
+            document.getElementById('modal').style.display = 'none';
+            if(completedDays.has(currentDayIndex)) return;
+
+            completedDays.add(currentDayIndex);
+            
+            const card = document.getElementById(`day-${currentDayIndex}`);
+            card.classList.add('completed');
+            
+            // Símbolo: DIAMANTE (Riqueza de habilidades)
+            card.innerHTML = `<span class="day-number" style="font-size:2rem">♦</span>`;
+            
+            createParticles(card);
+            updateProgress();
+            
+            // GUARDAR DATOS
+            saveData();
+        }
+
+        function updateProgress() {
+            const percent = completedDays.size; 
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressText').innerText = percent;
+        }
+
+        // --- 5. PERSISTENCIA DE DATOS (LOCALSTORAGE) ---
+        function saveData() {
+            localStorage.setItem('reo_data', JSON.stringify([...completedDays]));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('reo_data');
+            if (savedData) {
+                completedDays = new Set(JSON.parse(savedData));
+            }
+            generateGrid();
+            updateProgress();
+        }
+
+        function resetData() {
+            if(confirm("¿Deseas reiniciar tu arsenal de habilidades? Se borrará todo el progreso.")) {
+                completedDays.clear();
+                saveData();
+                generateGrid();
+                updateProgress();
+            }
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 6 + 3 + 'px';
+                particle.style.height = particle.style.width;
+                
+                // Colores: Púrpura y Dorado
+                const colors = ['#9d00ff', '#ffd700', '#ffffff'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // Forma de rombo/diamante
+                particle.style.transform = 'rotate(45deg)'; 
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '9999';
+                
+                document.body.appendChild(particle);
+
+                // Movimiento elegante
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 80 + 40;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                particle.animate([
+                    { transform: 'translate(0,0) rotate(45deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(${45 + Math.random()*180}deg) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // INICIAR AL CARGAR
+        loadData();
+
+    </script>
+</body>
+</html>
